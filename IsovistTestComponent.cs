@@ -1,8 +1,10 @@
 using Grasshopper;
 using Grasshopper.Kernel;
+using Rhino.Collections;
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IsovistTest {
     public class IsovistTestComponent : GH_Component {
@@ -14,9 +16,9 @@ namespace IsovistTest {
         /// new tabs/panels will automatically be created.
         /// </summary>
         public IsovistTestComponent()
-          : base("IsovistTest", "ASpi",
+          : base("IsovistTest", "IsoVist",
             "Construct an Isovist and evaluate data",
-            "Locus", "Field of view") {
+            "SweetSpot", "Field of view") {
         }
 
         /// <summary>
@@ -58,8 +60,10 @@ namespace IsovistTest {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("End Points", "EP", "End points of the rays", GH_ParamAccess.list);
-            pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.item);
-            pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.item);
+            pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
+            pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
+            pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
+            pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
             pManager.AddTextParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.list);
 
 
@@ -88,6 +92,7 @@ namespace IsovistTest {
             List<GeometryBase> interiorObstacles = new List<GeometryBase>();
             List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
             GeometryBase bonusViewGeometry = null;
+
 
 
             // Then we need to access the input parameters individually. 
@@ -123,13 +128,31 @@ namespace IsovistTest {
             }
 
 
+            List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
+            obstacles.AddRange(exteriorObstacles);
+
+
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
             // The actual functionality will be in a different method:
             //Curve spiral = CreateSpiral(plane, radius0, radius1, turns);
 
 
             List<Point3d> endPoints = ComputeEndPoints(testPoint, radius, resolution);
-            //List<Curve> rays = ComputeRays(endPoints);
+            List<Curve> rays = ComputeRays(testPoint, endPoints);
+            List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles);
+            List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, interiorObstacles);
+            List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, exteriorObstacles);
+
+            List<Point3d> interiorPerimeterPoints = ComputePerimeterPoints(interiorIntersectionPoints, endPoints);
+            Curve interiorPerimeter = CreatePerimeterCurve(interiorPerimeterPoints);
+            Brep[] interiorIsoVist = CreateIsoVist(interiorPerimeter);
+
+            List<Point3d> exteriorPerimeterPoints = ComputePerimeterPoints(allIntersectionPoints, endPoints);
+            Curve exteriorPerimeter = CreatePerimeterCurve(exteriorPerimeterPoints);
+            Brep[] exteriorIsoVist = CreateIsoVist(interiorPerimeter);
+
+
+
             //Brep interiorIsoVist = 
             //Brep exteriorIsovist =
 
@@ -137,9 +160,11 @@ namespace IsovistTest {
             // DA.SetData(0, spiral);
 
             DA.SetDataList(0, endPoints);
-
+            DA.SetDataList(1, allIntersectionPoints);
+            DA.SetDataList(2, interiorIntersectionPoints);;
+            DA.SetDataList(3, interiorIsoVist);
         }
-
+        /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
             Plane plane = Plane.WorldXY;
             Circle c = new Circle(plane, testPoint, radius);
@@ -154,6 +179,73 @@ namespace IsovistTest {
             }
 
             return endPoints;
+        }
+
+        ///..........................COMPUTE RAYS ...........................................
+
+        public List<Curve> ComputeRays(Point3d testPoint, List<Point3d> endPoints) {
+
+            List<Curve> rays = new List<Curve>();
+            List<double> distances = new List<double>();
+
+            {
+                foreach (Point3d endPoint in endPoints) {
+                    Line ray = new Rhino.Geometry.Line(testPoint, endPoint);
+                    Curve curveRay = ray.ToNurbsCurve();
+                    rays.Add(curveRay);
+                }
+            }
+
+            return rays;
+        }
+
+        /// .........................COMPUTE INTERSECTION POINTS
+
+        public List<Point3d> ComputeIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles) {
+            List<Point3d> intersectionPoints = new List<Point3d>();
+            foreach (Curve ray in rays) {
+                Point3d theClosestPoint = endPoints[0];
+                foreach (Brep io in obstacles) {
+                    Curve[] overlapCurves;
+                    Point3d[] brepIntersectPoints;
+
+                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, io, 0.0, out overlapCurves, out brepIntersectPoints);
+                    if (brepIntersectPoints.Count() > 0) {
+                        Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
+                        if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                            theClosestPoint = currClosestPoint;
+                        }
+                    }
+                }
+                intersectionPoints.Add(theClosestPoint);
+            }
+            return intersectionPoints;
+        }
+
+        public List<Point3d> ComputePerimeterPoints(List<Point3d> intersectionPoints, List<Point3d> endPoints) {
+            List<Point3d> perimeterPoints = new List<Point3d>();
+            foreach (Point3d pt in intersectionPoints) {
+                if (pt != endPoints[0]) perimeterPoints.Add(pt);
+            }
+            perimeterPoints.Add(perimeterPoints[0]);
+            return perimeterPoints;
+        }
+
+        public Curve CreatePerimeterCurve(List<Point3d> perimeterPoints) {
+            Curve perimeterCurve = Curve.CreateInterpolatedCurve(perimeterPoints, 1, CurveKnotStyle.Uniform);
+            perimeterCurve.MakeClosed(10.0);
+            return perimeterCurve;
+        }
+
+        public Brep[] CreateIsoVist (Curve perimeterCurve) {
+            Brep[] area = Brep.CreatePlanarBreps(perimeterCurve, 0.01);
+            return area;
+        }
+
+        public Double GetIsoVistArea(Brep area) {
+            AreaMassProperties mp = null;
+            mp = AreaMassProperties.Compute(area, true, false, false, false);
+            return mp.Area;
         }
 
         /// <summary>
