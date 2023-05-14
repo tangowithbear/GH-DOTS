@@ -261,6 +261,20 @@ namespace IsovistTest {
             return mp.Area;
         }
 
+
+
+        ///.........................COMPUTE VISIBILITY.....................................
+
+        public Curve[] containsBonus(Point3d testPoint, List<GeometryBase> obstacles, GeometryBase bonusViewGeometry) {
+            Brep bonusGeometry = Brep.TryConvertBrep(bonusViewGeometry);
+            Curve[] brepContourCurves = Brep.CreateContourCurves(bonusGeometry, new Point3d(0, 0, 0), new Point3d(0, 0, 1), 2.0);
+            return brepContourCurves;
+        }
+
+
+
+
+
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 
         /// will appear. There are seven possible locations (primary to septenary), 
