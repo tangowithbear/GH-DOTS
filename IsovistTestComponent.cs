@@ -64,6 +64,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Contours", "C", "test", GH_ParamAccess.list);
             pManager.AddTextParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
@@ -163,6 +164,7 @@ namespace IsovistTest {
             Curve exteriorPerimeter = CreatePerimeterCurve(exteriorPerimeterPoints);
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
 
+            Curve[] brepContours = ContainsBonus(testPoint, obstacles, bonusViewGeometry);
 
 
             //Brep interiorIsoVist = 
@@ -175,7 +177,8 @@ namespace IsovistTest {
             DA.SetDataList(1, interiorIntersectionPoints);
             DA.SetDataList(2, exteriorIntersectionPoints); ;
             DA.SetDataList(3, interiorIsoVist);
-            DA.SetDataList(4, exteriorIsoVist); ;
+            DA.SetDataList(4, exteriorIsoVist);
+            DA.SetDataList(5, brepContours);
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -265,9 +268,12 @@ namespace IsovistTest {
 
         ///.........................COMPUTE VISIBILITY.....................................
 
-        public Curve[] containsBonus(Point3d testPoint, List<GeometryBase> obstacles, GeometryBase bonusViewGeometry) {
+        public Curve[] ContainsBonus(Point3d testPoint, List<GeometryBase> obstacles, GeometryBase bonusViewGeometry) {
             Brep bonusGeometry = Brep.TryConvertBrep(bonusViewGeometry);
-            Curve[] brepContourCurves = Brep.CreateContourCurves(bonusGeometry, new Point3d(0, 0, 0), new Point3d(0, 0, 1), 2.0);
+            BoundingBox bonusBbox = bonusGeometry.GetBoundingBox(true);
+            Point3d startPt = bonusBbox.PointAt(0.5, 0.5, 0.0);
+            Point3d endPt = bonusBbox.PointAt(0.5, 0.5, 1.0);
+            Curve[] brepContourCurves = Brep.CreateContourCurves(bonusGeometry, startPt, endPt, 2.0);
             return brepContourCurves;
         }
 
