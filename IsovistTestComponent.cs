@@ -18,7 +18,7 @@ namespace IsovistTest {
         public IsovistTestComponent()
           : base("IsovistTest", "IsoVist",
             "Construct an Isovist and evaluate data",
-            "SweetSpot", "Field of view") {
+            "IndoorSpaceManager", "Field of view") {
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace IsovistTest {
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Bonus view geometry", "B", "Geometry to check the view acces", GH_ParamAccess.item);
 
-            
-           
+
+
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -66,6 +66,7 @@ namespace IsovistTest {
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
             pManager.AddTextParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.list);
 
+            //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -85,13 +86,15 @@ namespace IsovistTest {
             //double radius1 = 0.0;
             //int turns = 0;
 
-            Point3d testPoint = Point3d.Unset;
+
+            Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
             List<Point3d> allTestPoints = new List<Point3d>();
             int resolution = 1;
             int radius = 1000;
-            List<GeometryBase> interiorObstacles = new List<GeometryBase>();
+            List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
             List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
             GeometryBase bonusViewGeometry = null;
+
 
 
 
@@ -110,11 +113,11 @@ namespace IsovistTest {
             if (!DA.GetDataList<GeometryBase>(4, interiorObstacles)) return;
             if (!DA.GetDataList<GeometryBase>(5, exteriorObstacles)) return;
             if (!DA.GetData(6, ref bonusViewGeometry)) return;
-           
+
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (testPoint == Point3d.Unset ) {
+            if (testPoint == Point3d.Unset) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
@@ -126,6 +129,15 @@ namespace IsovistTest {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Resolution parameter must 1 or 2");
                 return;
             }
+
+            //object tiutout = null;
+            //if (tiutout is Point3d point3d) {
+            //}
+
+            //else {
+            //    List<object> tiutoutList = null;
+            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //}
 
 
             List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
@@ -149,7 +161,7 @@ namespace IsovistTest {
 
             List<Point3d> exteriorPerimeterPoints = ComputePerimeterPoints(allIntersectionPoints, endPoints);
             Curve exteriorPerimeter = CreatePerimeterCurve(exteriorPerimeterPoints);
-            Brep[] exteriorIsoVist = CreateIsoVist(interiorPerimeter);
+            Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
 
 
 
@@ -160,9 +172,10 @@ namespace IsovistTest {
             // DA.SetData(0, spiral);
 
             DA.SetDataList(0, endPoints);
-            DA.SetDataList(1, allIntersectionPoints);
-            DA.SetDataList(2, interiorIntersectionPoints);;
+            DA.SetDataList(1, interiorIntersectionPoints);
+            DA.SetDataList(2, exteriorIntersectionPoints); ;
             DA.SetDataList(3, interiorIsoVist);
+            DA.SetDataList(4, exteriorIsoVist); ;
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -237,7 +250,7 @@ namespace IsovistTest {
             return perimeterCurve;
         }
 
-        public Brep[] CreateIsoVist (Curve perimeterCurve) {
+        public Brep[] CreateIsoVist(Curve perimeterCurve) {
             Brep[] area = Brep.CreatePlanarBreps(perimeterCurve, 0.01);
             return area;
         }
@@ -262,7 +275,9 @@ namespace IsovistTest {
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => null;
+        protected override System.Drawing.Bitmap Icon => Properties.Resources.iconplugin;
+      
+
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
