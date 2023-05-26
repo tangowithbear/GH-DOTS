@@ -1,7 +1,9 @@
 ﻿using Grasshopper;
 using Grasshopper.Kernel;
+using Grasshopper.Kernel.Components;
 using Rhino.Collections;
 using Rhino.Geometry;
+using Rhino.UI.ObjectProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,7 @@ namespace IsovistTest {
 
             pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
-            pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Object to test", "B", "Geometry to check the view acces", GH_ParamAccess.item);
@@ -61,7 +63,8 @@ namespace IsovistTest {
             pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
-            pManager.AddTextParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item );
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -110,6 +113,8 @@ namespace IsovistTest {
             if (!DA.GetData(5, ref bonusViewGeometry)) return;
 
 
+
+
             // We should now validate the data and warn the user if invalid data is supplied.
 
             if (testPoint == Point3d.Unset) {
@@ -125,6 +130,12 @@ namespace IsovistTest {
                 return;
             }
 
+
+            var v = Params.Input[4].Sources[0];
+            string bonusName = v.NickName;
+
+
+
             //object tiutout = null;
             //if (tiutout is Point3d point3d) {
             //}
@@ -137,6 +148,7 @@ namespace IsovistTest {
 
             List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
             obstacles.AddRange(exteriorObstacles);
+          
 
 
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
@@ -148,16 +160,18 @@ namespace IsovistTest {
             List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, obstacles);
             List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, interiorObstacles);
             List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, exteriorObstacles);
+            double percentage = CalculatePercentage(visibility);
+            bool isThresholdPassed = IsThresholdPassed(threshold, percentage);
 
-
-            // Finally assign the spiral to the output parameter.
+            
 
 
             DA.SetDataList(0, targetPoints);
             DA.SetDataList(1, interiorIntersectionPoints);
             DA.SetDataList(2, exteriorIntersectionPoints); ;
             DA.SetDataList(3, visibility);
-            DA.SetDataList(4, allIntersectionPoints); ;
+            DA.SetData(4, percentage);
+            DA.SetData(5, isThresholdPassed);
         }
 
 
@@ -228,13 +242,19 @@ namespace IsovistTest {
                 bool isVisible = true;
                 foreach (Brep obstacle in obstacles) {
                     Curve[] overlapCurves;
-                    Point3d[] brepIntersectPoints;
+                    Point3d[] obstaclesIntersectPoints;
 
-                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
-                    if (brepIntersectPoints.Count() > 0) {
+                    Curve[] bonusSelfOverlapCurves;
+                    Point3d[] bonusSelfIntersectPoints;
+
+                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out obstaclesIntersectPoints);
+                    var bonusIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, bonusGeometry, 0.0, out bonusSelfOverlapCurves, out bonusSelfIntersectPoints);
+                    if (obstaclesIntersectPoints.Count() > 0 || bonusSelfIntersectPoints.Count() > 1 ) 
+                    {
                         isVisible = false;
                         break;
                     }
+
                 }
                 visibility.Add(isVisible);
             }
@@ -242,8 +262,27 @@ namespace IsovistTest {
             return visibility;
         }
 
+        public static double CalculatePercentage (List<bool> visibility) {
+            int trueCount = 0;
+            int totalCount = visibility.Count;  
+
+            foreach (bool value in visibility) {
+                if (value == true) {
+                trueCount++;
+                }
+            }
+
+            var tmp  = (trueCount / (double)totalCount) * 100;
+            return Math.Ceiling(tmp);
+        }
 
 
+        public static bool IsThresholdPassed (int threshold, double percentage)
+        {
+           if (threshold <= percentage)  return true; 
+           else return false;
+
+        }
 
 
         /// <summary>
