@@ -65,8 +65,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
-            pManager.AddBooleanParameter("TargetPoint", "T", "test", GH_ParamAccess.list);
-            pManager.AddTextParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.item);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -160,12 +159,15 @@ namespace IsovistTest {
             List<Point3d> interiorPerimeterPoints = ComputePerimeterPoints(interiorIntersectionPoints, endPoints);
             Curve interiorPerimeter = CreatePerimeterCurve(interiorPerimeterPoints);
             Brep[] interiorIsoVist = CreateIsoVist(interiorPerimeter);
+            Double interiorIsovistArea = ComputeIsoVistArea(interiorIsoVist);
 
             List<Point3d> exteriorPerimeterPoints = ComputePerimeterPoints(allIntersectionPoints, endPoints);
             Curve exteriorPerimeter = CreatePerimeterCurve(exteriorPerimeterPoints);
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
+            Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
-            List<bool> visibility = ContainsBonus(testPoint, obstacles, bonusViewGeometry);
+            string data = interiorIsovistArea.ToString() + exteriorIsovistArea.ToString();
+
 
 
             //Brep interiorIsoVist = 
@@ -179,7 +181,7 @@ namespace IsovistTest {
             DA.SetDataList(2, exteriorIntersectionPoints); ;
             DA.SetDataList(3, interiorIsoVist);
             DA.SetDataList(4, exteriorIsoVist);
-            DA.SetDataList(5, visibility);
+            DA.SetData(5, interiorIsovistArea);
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -259,50 +261,17 @@ namespace IsovistTest {
             return area;
         }
 
-        public Double GetIsoVistArea(Brep area) {
+
+
+        ///.........................COMPUTE ISOVIST AREA.....................................
+
+
+
+        public Double ComputeIsoVistArea(Brep[] area)
+        {
             AreaMassProperties mp = null;
             mp = AreaMassProperties.Compute(area, true, false, false, false);
             return mp.Area;
-        }
-
-
-
-        ///.........................COMPUTE VISIBILITY.....................................
-
-        public List<bool> ContainsBonus(Point3d testPoint, List<GeometryBase> obstacles, GeometryBase bonusViewGeometry) {
-            Brep bonusGeometry = Brep.TryConvertBrep(bonusViewGeometry);
-            BoundingBox bonusBbox = bonusGeometry.GetBoundingBox(true);
-            Point3d startPt = bonusBbox.PointAt(0.5, 0.5, 0.0);
-            Point3d endPt = bonusBbox.PointAt(0.5, 0.5, 1.0);
-            Curve[] brepContourCurves = Brep.CreateContourCurves(bonusGeometry, startPt, endPt, 2.0);
-
-            List <Point3d> targetPoints = new List <Point3d>();
-            Point3d[] curveTargetPoints = new Point3d[21];
-            foreach (Curve contourCurve in brepContourCurves) {
-                contourCurve.DivideByCount(20, false, out curveTargetPoints);
-                foreach (Point3d curveTargetPoint in curveTargetPoints) {
-                    targetPoints.Add(curveTargetPoint);
-                }
-            }
-
-            List<bool> visibility = new List<bool>();
-            List<Curve> rays = ComputeRays(testPoint, targetPoints);
-            foreach (Curve ray in rays) {
-                bool isVisible = true;
-                foreach (Brep obstacle in obstacles) {
-                    Curve[] overlapCurves;
-                    Point3d[] brepIntersectPoints;
-
-                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
-                    if (brepIntersectPoints.Count() > 0) {
-                        isVisible = false;
-                        break;
-                    }
-                }
-                visibility.Add(isVisible);
-            }
-
-            return visibility;
         }
 
 
