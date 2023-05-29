@@ -34,7 +34,7 @@ namespace IsovistTest {
             // to import lists or trees of values, modify the ParamAccess flag.
 
 
-            pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
@@ -101,7 +101,9 @@ namespace IsovistTest {
             //if (!DA.GetData(2, ref radius1)) return;
             //if (!DA.GetData(3, ref turns)) return;
 
-            if (!DA.GetData(0, ref testPoint)) return;
+            Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
+
+            if (!DA.GetData(0, ref obj)) return;
             if (!DA.GetDataList<Point3d>(1, allTestPoints)) return;
             if (!DA.GetData(2, ref threshold)) return;
             if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
@@ -113,7 +115,7 @@ namespace IsovistTest {
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (testPoint == Point3d.Unset) {
+            if (obj == null) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
@@ -126,6 +128,17 @@ namespace IsovistTest {
                 return;
             }
 
+
+            SpatialUnit testSU = obj.Value as SpatialUnit;
+
+            if (testSU == null) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Test point is not valid");
+                return;
+            }
+
+            testPoint = testSU.Point3d;
+
+                 
 
             var v = Params.Input[4].Sources[0];
             string bonusName = v.NickName;

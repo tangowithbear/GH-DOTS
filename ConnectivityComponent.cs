@@ -196,14 +196,14 @@ namespace IsovistTest
         /// </summary>
         /// protected override System.Drawing.Bitmap Icon => Properties.Resources.;
 
-
+        protected override System.Drawing.Bitmap Icon => null;
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("83BD2709-B249-4ED5-8379-769A2FB7E888");
+        public override Guid ComponentGuid => new Guid("CF1B8304-B8E9-4103-AFA2-B0E1EF1CF5BC");
 
     }
 }
