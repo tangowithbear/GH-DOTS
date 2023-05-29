@@ -172,7 +172,10 @@ namespace IsovistTest {
             double percentage = CalculatePercentage(visibility);
             bool isThresholdPassed = IsThresholdPassed(threshold, percentage);
 
-            
+            testSU.Threshold = threshold;
+            testSU.Percentage = percentage;
+            testSU.Visibility = isThresholdPassed;
+
 
 
             DA.SetDataList(0, targetPoints);

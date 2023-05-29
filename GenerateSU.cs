@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace IsovistTest {
     public class GenerateSUcomponent : GH_Component {
@@ -52,6 +53,9 @@ namespace IsovistTest {
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
             pManager.AddTextParameter("SpatialUnit ID", "SUID", "spatial Unit Identifire", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
+
+            
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -105,14 +109,34 @@ namespace IsovistTest {
             // The actual functionality will be in a different method:
 
             SpatialUnit spatialUnit = new SpatialUnit(testPoint);
-
+            List<string> data = AggregateProperties(spatialUnit);
 
             DA.SetData(0, spatialUnit.Point3d);
             DA.SetData(1, spatialUnit.SUID);
             DA.SetData(2, spatialUnit);
+            DA.SetDataList(3, data);
 
         }
 
+
+        /// ...............................MAKE A PROPERTY/VALUE LIST.................................
+ 
+        public List<string> AggregateProperties (SpatialUnit testSU) {
+
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties(); 
+            foreach (var property in props) {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                result.Add(propString);
+            }
+
+            return result;
+        } 
         public override GH_Exposure Exposure => GH_Exposure.primary;
 
         /// <summary>
