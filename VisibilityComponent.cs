@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace IsovistTest {
     public class VisibilityComponent : GH_Component {
@@ -61,6 +62,7 @@ namespace IsovistTest {
             pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item );
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -176,7 +178,7 @@ namespace IsovistTest {
             testSU.Percentage = percentage;
             testSU.Visibility = isThresholdPassed;
 
-
+            List<string> data = AggregateProperties(testSU);
 
             DA.SetDataList(0, targetPoints);
             DA.SetDataList(1, interiorIntersectionPoints);
@@ -184,6 +186,7 @@ namespace IsovistTest {
             DA.SetDataList(3, visibility);
             DA.SetData(4, percentage);
             DA.SetData(5, isThresholdPassed);
+            DA.SetDataList(6, data);
         }
 
 
@@ -295,6 +298,30 @@ namespace IsovistTest {
            else return false;
 
         }
+
+
+
+
+        public List<string> AggregateProperties(SpatialUnit testSU)
+        {
+
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props)
+            {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                result.Add(propString);
+            }
+
+            return result;
+        }
+
+
 
 
         /// <summary>
