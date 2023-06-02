@@ -31,9 +31,9 @@ namespace IsovistTest {
 
         /// ...........................VISIBILITY...........................
 
-        public double Percentage  { get; set; }
-        public int Threshold   { get; set; }
-        public bool Visibility { get; set; }
+        public double Visibility_Percentage  { get; set; }
+        public int Visibility_Threshold   { get; set; }
+        public bool Visibility_Visibility { get; set; }
 
         ///...........................CONNCETIVITY.........................
 
@@ -42,9 +42,9 @@ namespace IsovistTest {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
-            this.Percentage = 0;
-            this.Threshold = 20;
-            this.Visibility = false;
+            this.Visibility_Percentage = 0;
+            this.Visibility_Threshold = 20;
+            this.Visibility_Visibility = false;
 
         }
     }

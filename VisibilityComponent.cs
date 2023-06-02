@@ -35,7 +35,7 @@ namespace IsovistTest {
             // to import lists or trees of values, modify the ParamAccess flag.
 
 
-            pManager.AddGenericParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Spatial Unit", "SU", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
@@ -174,9 +174,9 @@ namespace IsovistTest {
             double percentage = CalculatePercentage(visibility);
             bool isThresholdPassed = IsThresholdPassed(threshold, percentage);
 
-            testSU.Threshold = threshold;
-            testSU.Percentage = percentage;
-            testSU.Visibility = isThresholdPassed;
+            testSU.Visibility_Threshold = threshold;
+            testSU.Visibility_Percentage = percentage;
+            testSU.Visibility_Visibility = isThresholdPassed;
 
             List<string> data = AggregateProperties(testSU);
 
@@ -315,7 +315,10 @@ namespace IsovistTest {
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
-                result.Add(propString);
+                if (propString.Contains("Visibility") || propString.Contains("SUID")) { 
+
+                    result.Add(propString);
+                }
             }
 
             return result;
