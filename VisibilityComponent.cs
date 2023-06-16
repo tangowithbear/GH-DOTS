@@ -36,7 +36,6 @@ namespace IsovistTest {
 
 
             pManager.AddGenericParameter("Spatial Unit", "SU", "Test point for a spatial unit", GH_ParamAccess.item);
-            pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
@@ -86,7 +85,6 @@ namespace IsovistTest {
 
 
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
-            List<Point3d> allTestPoints = new List<Point3d>();
             int threshold = 20;
             List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
             List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
@@ -106,11 +104,10 @@ namespace IsovistTest {
             Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
             if (!DA.GetData(0, ref obj)) return;
-            if (!DA.GetDataList<Point3d>(1, allTestPoints)) return;
-            if (!DA.GetData(2, ref threshold)) return;
-            if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(4, exteriorObstacles)) return;
-            if (!DA.GetData(5, ref bonusViewGeometry)) return;
+            if (!DA.GetData(1, ref threshold)) return;
+            if (!DA.GetDataList<GeometryBase>(2, interiorObstacles)) return;
+            if (!DA.GetDataList<GeometryBase>(3, exteriorObstacles)) return;
+            if (!DA.GetData(4, ref bonusViewGeometry)) return;
 
 
 
