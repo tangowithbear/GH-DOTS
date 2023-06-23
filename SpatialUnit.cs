@@ -26,7 +26,7 @@ namespace IsovistTest {
         public double  Isovist_IntIsovistArea    { get; set; }
 
         public Brep[]  Isovist_ExteriorIsovist   { get; set; }
-        public double  Isivist_ExtIsovistArea    { get; set; }
+        public double  Isovist_ExtIsovistArea    { get; set; }
 
         ///public string MainViewDirection;
         ///public double DriftMagnetude;

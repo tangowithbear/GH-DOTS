@@ -304,7 +304,7 @@ namespace IsovistTest {
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
-                if (propString.Contains("Visibility") || propString.Contains("SUID"))
+                if (propString.Contains("Isovist") || propString.Contains("SUID"))
                 {
 
                     result.Add(propString);
