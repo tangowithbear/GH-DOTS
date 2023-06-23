@@ -22,18 +22,23 @@ namespace IsovistTest {
 
         /// ...........................ISOVIST...........................
 
-        ///public brep InteriorIsovist;
-        ///public brep ExteriorIsovist;
-        ///public double IntIsovistArea;
-        ///public double ExtIsovistArea;
+        public Brep    Isovist_InteriorIsovist   { get; set; }
+        public double  Isovist_IntIsovistArea    { get; set; }
+
+        public Brep    Isovist_ExteriorIsovist   { get; set; }
+        public double  Isivist_ExtIsovistArea    { get; set; }
+
         ///public string MainViewDirection;
         ///public double DriftMagnetude;
+        ///public double Max Radius;
+        ///public double Compactness;
+        ///public double Skewnes;
 
         /// ...........................VISIBILITY...........................
 
         public double Visibility_Percentage  { get; set; }
-        public int Visibility_Threshold   { get; set; }
-        public bool Visibility_Visibility { get; set; }
+        public int    Visibility_Threshold   { get; set; }
+        public bool   Visibility_Visibility  { get; set; }
 
         ///...........................CONNCETIVITY.........................
 
@@ -42,6 +47,9 @@ namespace IsovistTest {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
+
+
+
             this.Visibility_Percentage = 0;
             this.Visibility_Threshold = 20;
             this.Visibility_Visibility = false;

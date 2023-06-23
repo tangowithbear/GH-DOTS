@@ -36,8 +36,7 @@ namespace IsovistTest {
             //pManager.AddNumberParameter("Outer Radius", "R1", "Outer radius for spiral", GH_ParamAccess.item, 10.0);
             //pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
 
-            pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
-            pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Spatial Unit", "SU", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddIntegerParameter("View resolution", "VR", "View resolution, 1 for 360, 2 for 720", GH_ParamAccess.item, 1);
             pManager.AddIntegerParameter("radius", "R", "Lenght of the Ray", GH_ParamAccess.item, 1000);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
@@ -89,7 +88,6 @@ namespace IsovistTest {
 
 
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
-            List<Point3d> allTestPoints = new List<Point3d>();
             int resolution = 1;
             int radius = 1000;
             List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
@@ -102,24 +100,20 @@ namespace IsovistTest {
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
 
-            //if (!DA.GetData(0, ref plane)) return;
-            //if (!DA.GetData(1, ref radius0)) return;
-            //if (!DA.GetData(2, ref radius1)) return;
-            //if (!DA.GetData(3, ref turns)) return;
+            Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
-            if (!DA.GetData(0, ref testPoint)) return;
-            if (!DA.GetDataList<Point3d>(1, allTestPoints)) return;
-            if (!DA.GetData(2, ref resolution)) return;
-            if (!DA.GetData(3, ref radius)) return;
-            if (!DA.GetDataList<GeometryBase>(4, interiorObstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(5, exteriorObstacles)) return;
-            if (!DA.GetData(6, ref bonusViewGeometry)) return;
+            if (!DA.GetData(0, ref obj)) return;
+            if (!DA.GetData(1, ref resolution)) return;
+            if (!DA.GetData(2, ref radius)) return;
+            if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
+            if (!DA.GetDataList<GeometryBase>(4, exteriorObstacles)) return;
+            if (!DA.GetData(5, ref bonusViewGeometry)) return;
 
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (testPoint == Point3d.Unset) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
+            if (obj == null) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Spatial Unit is provided");
                 return;
             }
             if (radius <= 0.0) {
@@ -140,6 +134,16 @@ namespace IsovistTest {
             //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
             //}
 
+
+            SpatialUnit testSU = obj.Value as SpatialUnit;
+
+            if (testSU == null)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Test point is not valid");
+                return;
+            }
+
+            testPoint = testSU.Point3d;
 
             List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
             obstacles.AddRange(exteriorObstacles);

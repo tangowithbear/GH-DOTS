@@ -115,7 +115,7 @@ namespace IsovistTest {
             // We should now validate the data and warn the user if invalid data is supplied.
 
             if (obj == null) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Spatial Unit  is provided");
                 return;
             }
             if (threshold <= 0.0) {
