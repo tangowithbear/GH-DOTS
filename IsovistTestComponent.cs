@@ -162,7 +162,7 @@ namespace IsovistTest {
 
             List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
             List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, interiorObstacles, false);
-            List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
+            ///List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
 
             List<Point3d> interiorPerimeterPoints = ComputeIntPerimeterPoints(testPoint, interiorIntersectionPoints, endPoints);
             Curve interiorPerimeter = CreatePerimeterCurve(interiorPerimeterPoints);
@@ -246,35 +246,28 @@ namespace IsovistTest {
                     Point3d[] brepIntersectPoints;
 
                     var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, io, 0.0, out overlapCurves, out brepIntersectPoints);
-                    if (includeEndPoints == false)
-                    {
-                        if (brepIntersectPoints.Count() > 0)
-                        {
-                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                            if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint))
-                            {
-                                theClosestPoint = currClosestPoint;
-                            }
-                        }
-                    }
-                    
-                    else if (includeEndPoints == true)
-                    {
-                        if (brepIntersectPoints.Count() > 0)
-                        {
-                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                            if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint))
-                            {
-                                theClosestPoint = currClosestPoint;
-                            }
-                        }
 
-                        else if (brepIntersectPoints.Count() == 0)
+                    if (includeEndPoints) {
+                        if (brepIntersectPoints.Count() > 0) {
+                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
+                            if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                                theClosestPoint = currClosestPoint;
+                            }
+                        } 
+                        else 
                         {
                             theClosestPoint = ray.PointAtEnd;
                         }
-
+                    } 
+                    else {
+                        if (brepIntersectPoints.Count() > 0) {
+                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
+                            if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                                theClosestPoint = currClosestPoint;
+                            }
+                        }
                     }
+
                 }
                 intersectionPoints.Add(theClosestPoint);
             }
