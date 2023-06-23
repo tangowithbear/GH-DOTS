@@ -40,10 +40,14 @@ namespace IsovistTest {
         public int    Visibility_Threshold   { get; set; }
         public bool   Visibility_Visibility  { get; set; }
 
-        ///...........................CONNCETIVITY.........................
+        ///...........................CONNECTIVITY......................... 
+
+       /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
+       /// public List<double> Distance                 { get; set; }
+       /// public List<bool>   SolidTransparentObstacle { get; set; }
 
 
-        public  SpatialUnit(Point3d point3d) {
+    public  SpatialUnit(Point3d point3d) {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
