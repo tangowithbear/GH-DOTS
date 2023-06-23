@@ -22,10 +22,10 @@ namespace IsovistTest {
 
         /// ...........................ISOVIST...........................
 
-        public Brep    Isovist_InteriorIsovist   { get; set; }
+        public Brep[]  Isovist_InteriorIsovist   { get; set; }
         public double  Isovist_IntIsovistArea    { get; set; }
 
-        public Brep    Isovist_ExteriorIsovist   { get; set; }
+        public Brep[]  Isovist_ExteriorIsovist   { get; set; }
         public double  Isivist_ExtIsovistArea    { get; set; }
 
         ///public string MainViewDirection;
@@ -51,7 +51,7 @@ namespace IsovistTest {
 
 
             this.Visibility_Percentage = 0;
-            this.Visibility_Threshold = 20;
+            this.Visibility_Threshold  = 0;
             this.Visibility_Visibility = false;
 
         }

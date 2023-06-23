@@ -1,11 +1,14 @@
 using Grasshopper;
 using Grasshopper.Kernel;
+using Grasshopper.Kernel.Components;
 using Rhino.Collections;
 using Rhino.Geometry;
+using Rhino.UI.ObjectProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace IsovistTest {
     public class IsovistTestComponent : GH_Component {
@@ -41,7 +44,7 @@ namespace IsovistTest {
             pManager.AddIntegerParameter("radius", "R", "Lenght of the Ray", GH_ParamAccess.item, 1000);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Bonus view geometry", "B", "Geometry to check the view acces", GH_ParamAccess.item);
+
 
 
 
@@ -64,7 +67,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Data", "D", "Properties data containing numerical values", GH_ParamAccess.item);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -92,7 +95,7 @@ namespace IsovistTest {
             int radius = 1000;
             List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
             List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
-            GeometryBase bonusViewGeometry = null;
+
 
 
 
@@ -107,7 +110,7 @@ namespace IsovistTest {
             if (!DA.GetData(2, ref radius)) return;
             if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
             if (!DA.GetDataList<GeometryBase>(4, exteriorObstacles)) return;
-            if (!DA.GetData(5, ref bonusViewGeometry)) return;
+ 
 
 
             // We should now validate the data and warn the user if invalid data is supplied.
@@ -156,9 +159,10 @@ namespace IsovistTest {
 
             List<Point3d> endPoints = ComputeEndPoints(testPoint, radius, resolution);
             List<Curve> rays = ComputeRays(testPoint, endPoints);
+
             List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles);
             List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, interiorObstacles);
-            List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, exteriorObstacles);
+            List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles);
 
             List<Point3d> interiorPerimeterPoints = ComputePerimeterPoints(interiorIntersectionPoints, endPoints);
             Curve interiorPerimeter = CreatePerimeterCurve(interiorPerimeterPoints);
@@ -170,7 +174,7 @@ namespace IsovistTest {
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
             Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
-            string data = interiorIsovistArea.ToString() + exteriorIsovistArea.ToString();
+
 
 
 
@@ -180,12 +184,20 @@ namespace IsovistTest {
             // Finally assign the spiral to the output parameter.
             // DA.SetData(0, spiral);
 
+            testSU.Isovist_InteriorIsovist = interiorIsoVist;
+            testSU.Isovist_IntIsovistArea = interiorIsovistArea;
+            testSU.Isovist_ExteriorIsovist = exteriorIsoVist;
+            testSU.Isivist_ExtIsovistArea = exteriorIsovistArea;
+
+            List<string> data = AggregateProperties(testSU);
+
+
             DA.SetDataList(0, endPoints);
             DA.SetDataList(1, interiorIntersectionPoints);
-            DA.SetDataList(2, exteriorIntersectionPoints); ;
+            DA.SetDataList(2, allIntersectionPoints); ;
             DA.SetDataList(3, interiorIsoVist);
             DA.SetDataList(4, exteriorIsoVist);
-            DA.SetData(5, interiorIsovistArea);
+            DA.SetDataList(5, data);
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -279,7 +291,28 @@ namespace IsovistTest {
         }
 
 
+        public List<string> AggregateProperties(SpatialUnit testSU)
+        {
 
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props)
+            {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                if (propString.Contains("Visibility") || propString.Contains("SUID"))
+                {
+
+                    result.Add(propString);
+                }
+            }
+
+            return result;
+        }
 
 
         /// <summary>
