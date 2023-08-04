@@ -62,7 +62,7 @@ namespace IsovistTest {
             // Output parameters do not have default values, but they too must have the correct access type.
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
-            pManager.AddPointParameter("End Points", "EP", "End points of the rays", GH_ParamAccess.list);
+            pManager.AddPointParameter("End Points", "EP", "End points of the rays", GH_ParamAccess.item);
             pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
@@ -160,8 +160,8 @@ namespace IsovistTest {
             List<Point3d> endPoints = ComputeEndPoints(testPoint, radius, resolution);
             List<Curve> rays = ComputeRays(testPoint, endPoints);
 
-            List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
-            List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, interiorObstacles, false);
+            List<Point3d> allIntersectionPoints = ComputeExtIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
+            List<Point3d> interiorIntersectionPoints = ComputeIntIntersectionPoints(testPoint, endPoints, rays, interiorObstacles, false);
             ///List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
 
             List<Point3d> interiorPerimeterPoints = ComputeIntPerimeterPoints(testPoint, interiorIntersectionPoints, endPoints);
@@ -236,7 +236,7 @@ namespace IsovistTest {
 
         /// .........................COMPUTE INTERSECTION POINTS
 
-        public List<Point3d> ComputeIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles, bool includeEndPoints) /// x=0 if endPoins not included
+        public List<Point3d> ComputeExtIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles, bool includeEndPoints) /// x=0 if endPoins not included
         {
             List<Point3d> intersectionPoints = new List<Point3d>();
             foreach (Curve ray in rays) {
@@ -253,29 +253,46 @@ namespace IsovistTest {
                             if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
                                 theClosestPoint = currClosestPoint;
                             }
-                        } 
-                        else 
-                        {
-                            theClosestPoint = ray.PointAtEnd;
-                        }
-                    } 
-                    else {
-                        if (brepIntersectPoints.Count() > 0) {
-                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                            if ((testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint) 
-                                && (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(endPoints[0])))) {
-                                theClosestPoint = currClosestPoint;
-                            }                          
                         }
                     }
-
                 }
-                intersectionPoints.Add(theClosestPoint);
+            intersectionPoints.Add(theClosestPoint);
             }
             return intersectionPoints;
         }
 
-        public List<Point3d> ComputeIntPerimeterPoints(Point3d testPoint, List<Point3d> intersectionPoints, List<Point3d> endPoints) {
+
+        public List<Point3d> ComputeIntIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles, bool includeEndPoints) /// x=0 if endPoins not included
+        {
+            List<Point3d> intersectionPoints = new List<Point3d>();
+            foreach (Curve ray in rays) {
+                Point3d theClosestPoint = ray.PointAtEnd;
+                foreach (Brep obstacle in obstacles) {
+                    Curve[] overlapCurves;
+                    Point3d[] brepIntersectPoints;
+
+                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
+
+                    if (brepIntersectPoints.Count() > 0) {
+                        Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
+                        if ((testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)
+                            && (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(endPoints[0])))) {
+                            theClosestPoint = currClosestPoint;
+                        }
+                        intersectionPoints.Add(theClosestPoint);
+                    }
+                }
+
+            }
+        
+            return intersectionPoints;
+        }
+
+
+
+
+
+    public List<Point3d> ComputeIntPerimeterPoints(Point3d testPoint, List<Point3d> intersectionPoints, List<Point3d> endPoints) {
             List<Point3d> intPerimeterPoints = new List<Point3d>();
             foreach (Point3d pt in intersectionPoints) {
                 if (testPoint.DistanceToSquared(pt) < testPoint.DistanceToSquared(endPoints[0])) {
@@ -292,7 +309,7 @@ namespace IsovistTest {
             List<Point3d> extPerimeterPoints = new List<Point3d>();
             foreach (Point3d pt in intersectionPoints)
             {
-                if (pt != endPoints[0]) extPerimeterPoints.Add(pt);
+                extPerimeterPoints.Add(pt);
             }
             extPerimeterPoints.Add(extPerimeterPoints[0]);  /// close perimeter
             return extPerimeterPoints;
