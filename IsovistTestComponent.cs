@@ -240,12 +240,12 @@ namespace IsovistTest {
         {
             List<Point3d> intersectionPoints = new List<Point3d>();
             foreach (Curve ray in rays) {
-                Point3d theClosestPoint = endPoints[0];
-                foreach (Brep io in obstacles) {
+                Point3d theClosestPoint = ray.PointAtEnd;
+                foreach (Brep obstacle in obstacles) {
                     Curve[] overlapCurves;
                     Point3d[] brepIntersectPoints;
 
-                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, io, 0.0, out overlapCurves, out brepIntersectPoints);
+                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
 
                     if (includeEndPoints) {
                         if (brepIntersectPoints.Count() > 0) {
@@ -262,9 +262,10 @@ namespace IsovistTest {
                     else {
                         if (brepIntersectPoints.Count() > 0) {
                             Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                            if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                            if ((testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint) 
+                                && (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(endPoints[0])))) {
                                 theClosestPoint = currClosestPoint;
-                            }
+                            }                          
                         }
                     }
 
@@ -277,7 +278,9 @@ namespace IsovistTest {
         public List<Point3d> ComputeIntPerimeterPoints(Point3d testPoint, List<Point3d> intersectionPoints, List<Point3d> endPoints) {
             List<Point3d> intPerimeterPoints = new List<Point3d>();
             foreach (Point3d pt in intersectionPoints) {
-                if (pt != endPoints[0]) intPerimeterPoints.Add(pt);
+                if (testPoint.DistanceToSquared(pt) < testPoint.DistanceToSquared(endPoints[0])) {
+                    intPerimeterPoints.Add(pt);
+                }
             }
             intPerimeterPoints.Add(intPerimeterPoints[0]);  /// close perimeter
             return intPerimeterPoints;
@@ -315,8 +318,7 @@ namespace IsovistTest {
 
         public Double ComputeIsoVistArea(Brep[] area)
         {
-            AreaMassProperties mp = null;
-            mp = AreaMassProperties.Compute(area, true, false, false, false);
+            AreaMassProperties mp = AreaMassProperties.Compute(area, true, false, false, false);
             return mp.Area;
         }
 
