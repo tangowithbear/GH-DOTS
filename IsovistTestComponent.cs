@@ -201,7 +201,7 @@ namespace IsovistTest {
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
-            Plane plane = Plane.WorldXY;
+            Plane plane = new Plane(testPoint, Vector3d.XAxis, Vector3d.YAxis);
             Circle c = new Circle(plane, testPoint, radius);
 
             int N = resolution * 360;
