@@ -51,7 +51,7 @@ namespace IsovistTest {
             // Output parameters do not have default values, but they too must have the correct access type.
 
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
-            pManager.AddTextParameter("SpatialUnit ID", "SUID", "spatial Unit Identifire", GH_ParamAccess.item);
+            pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifire", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 

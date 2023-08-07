@@ -73,6 +73,16 @@ namespace IsovistTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap isovisticon {
+            get {
+                object obj = ResourceManager.GetObject("isovisticon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap visibility {
             get {
                 object obj = ResourceManager.GetObject("visibility", resourceCulture);
