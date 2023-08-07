@@ -28,7 +28,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="Resources\all icons.png">
+    <None Update="Resources\isovisticon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\visibility.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\iconplugin.png">

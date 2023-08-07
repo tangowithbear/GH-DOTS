@@ -378,7 +378,7 @@ namespace IsovistTest {
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Properties.Resources.iconplugin;
+        protected override System.Drawing.Bitmap Icon => Properties.Resources.isovisticon;
       
 
 
