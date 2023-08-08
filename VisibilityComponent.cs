@@ -35,7 +35,7 @@ namespace IsovistTest {
             // to import lists or trees of values, modify the ParamAccess flag.
 
 
-            pManager.AddGenericParameter("Spatial Unit", "SU", "Test point for a spatial unit", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);

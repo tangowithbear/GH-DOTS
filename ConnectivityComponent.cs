@@ -8,7 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-
+using System.Reflection;
+/*
 namespace IsovistTest
 {
     public class ConnectivityComponent : GH_Component
@@ -42,12 +43,12 @@ namespace IsovistTest
             //pManager.AddNumberParameter("Outer Radius", "R1", "Outer radius for spiral", GH_ParamAccess.item, 10.0);
             //pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
 
-            pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
             pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
-            pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Object to test", "B", "Geometry to check the view acces", GH_ParamAccess.item);
+            pManager.AddGeometryParameter("Static obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Dynamic obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
+
 
 
             // If you want to change properties of certain parameters, 
@@ -65,11 +66,12 @@ namespace IsovistTest
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
-            pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
-            pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
+            pManager.AddPointParameter("Static intersection Points", "SIP", "Intersections points with static obstacles", GH_ParamAccess.list);
+            pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
             pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Number of visible units", "N", "Number of visible units from of the test unit", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Visible spatial units", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -96,9 +98,9 @@ namespace IsovistTest
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
             List<Point3d> allTestPoints = new List<Point3d>();
             int threshold = 20;
-            List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
-            List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
-            GeometryBase bonusViewGeometry = null;
+            List<GeometryBase> staticObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
+            List<GeometryBase> dynamicObstacles = new List<GeometryBase>();
+
 
 
 
@@ -111,12 +113,14 @@ namespace IsovistTest
             //if (!DA.GetData(2, ref radius1)) return;
             //if (!DA.GetData(3, ref turns)) return;
 
-            if (!DA.GetData(0, ref testPoint)) return;
+            Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
+
+            if (!DA.GetData(0, ref obj)) return;
             if (!DA.GetDataList<Point3d>(1, allTestPoints)) return;
             if (!DA.GetData(2, ref threshold)) return;
-            if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(4, exteriorObstacles)) return;
-            if (!DA.GetData(5, ref bonusViewGeometry)) return;
+            if (!DA.GetDataList<GeometryBase>(3, staticObstacles)) return;
+            if (!DA.GetDataList<GeometryBase>(4, dynamicObstacles)) return;
+
 
 
 
@@ -133,11 +137,22 @@ namespace IsovistTest
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
                 return;
             }
-            if (interiorObstacles == null || exteriorObstacles == null)
+            if (staticObstacles == null || dynamicObstacles == null)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No obstacles is provided");
                 return;
             }
+
+
+
+            SpatialUnit testSU = obj.Value as SpatialUnit;
+
+            if (testSU == null) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Test point is not valid");
+                return;
+            }
+
+            testPoint = testSU.Point3d;
 
 
             var v = Params.Input[4].Sources[0];
@@ -155,8 +170,8 @@ namespace IsovistTest
             //}
 
 
-            List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
-            obstacles.AddRange(exteriorObstacles);
+            List<GeometryBase> obstacles = new List<GeometryBase>(staticObstacles);
+            obstacles.AddRange(dynamicObstacles);
 
 
 
@@ -164,20 +179,39 @@ namespace IsovistTest
             // The actual functionality will be in a different method:
 
 
+            List<string> data = AggregateProperties(testSU);
 
+            
 
-
-
-           /* DA.SetDataList(0, );
-            DA.SetDataList(1, );
-            DA.SetDataList(2, ); 
-            DA.SetDataList(3, );
-            DA.SetData(4, );
-            DA.SetData(5, );*/
+            DA.SetDataList(0, targetPoints);
+            DA.SetDataList(1, staticIntersectionPoints );
+            DA.SetDataList(2, dynamicIntersectionPoints);
+            DA.SetDataList(3, results);
+            DA.SetDataList(4, visibleSUNumber );
+            DA.SetData(5, visibleSU);
+            DA.SetDataList(6, data);
         }
 
 
+        public List<string> AggregateProperties(SpatialUnit testSU) {
 
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props) {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                if (propString.Contains("Visibility") || propString.Contains("SUID")) {
+
+                    result.Add(propString);
+                }
+            }
+
+            return result;
+        }
 
 
         /// <summary>
@@ -204,6 +238,7 @@ namespace IsovistTest
         /// that use the old ID will partially fail during loading.
         /// </summary>
         public override Guid ComponentGuid => new Guid("CF1B8304-B8E9-4103-AFA2-B0E1EF1CF5BC");
-
+        
     }
 }
+*/
