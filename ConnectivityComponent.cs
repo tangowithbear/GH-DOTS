@@ -66,13 +66,13 @@ namespace IsovistTest
             // Output parameters do not have default values, but they too must have the correct access type.
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
-            pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
+            //pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
             pManager.AddPointParameter("Static intersection Points", "SIP", "Intersections points with static obstacles", GH_ParamAccess.list);
-            pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
-            pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
+            //pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
+            //pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
             pManager.AddNumberParameter("Number of visible units", "N", "Number of visible units from of the test unit", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Visible spatial units", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
-            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
+            pManager.AddBooleanParameter("Visible spatial units test Points", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
+            pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -187,13 +187,10 @@ namespace IsovistTest
 
             
 
-            DA.SetDataList(0, targetPoints);
-            DA.SetDataList(1, staticIntersectionPoints );
-            DA.SetDataList(2, dynamicIntersectionPoints);
-            DA.SetDataList(3, results);
-            DA.SetDataList(4, visibleSUNumber );
-            DA.SetData(5, visibleSU);
-            DA.SetDataList(6, data);
+            DA.SetDataList(0, intersectionPoints);
+            DA.SetDataList(1, visibleSUNumber );
+            DA.SetData(2, visibleSUtestpoints);
+            DA.SetDataList(3, data);
         }
 
         ///..........................COMPUTE RAYS ...........................................
