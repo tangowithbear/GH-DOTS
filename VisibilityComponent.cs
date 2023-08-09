@@ -205,7 +205,7 @@ namespace IsovistTest {
             return rays;
         }
 
-        /// .........................COMPUTE INTERSECTION POINTS
+        /// .........................COMPUTE INTERSECTION POINTS................................
 
         public List<Point3d> ComputeIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles) {
             List<Point3d> intersectionPoints = new List<Point3d>();

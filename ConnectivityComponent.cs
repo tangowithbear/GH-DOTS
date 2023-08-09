@@ -3,13 +3,14 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
 using Rhino.Collections;
 using Rhino.Geometry;
+using Rhino.Input.Custom;
 using Rhino.UI.ObjectProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-/*
+
 namespace IsovistTest
 {
     public class ConnectivityComponent : GH_Component
@@ -179,6 +180,9 @@ namespace IsovistTest
             // The actual functionality will be in a different method:
 
 
+            HashSet<SpatialUnit> visibleSU = new HashSet<SpatialUnit>();
+
+
             List<string> data = AggregateProperties(testSU);
 
             
@@ -190,6 +194,55 @@ namespace IsovistTest
             DA.SetDataList(4, visibleSUNumber );
             DA.SetData(5, visibleSU);
             DA.SetDataList(6, data);
+        }
+
+        ///..........................COMPUTE RAYS ...........................................
+       
+        
+       public List<Curve> ComputeRays(Point3d testPoint, List<Point3d> endPoints) {
+
+            List<Curve> rays = new List<Curve>();
+            List<double> distances = new List<double>();
+
+            {
+                foreach (Point3d endPoint in endPoints) {
+                    Line ray = new Rhino.Geometry.Line(testPoint, endPoint);
+                    Curve curveRay = ray.ToNurbsCurve();
+                    rays.Add(curveRay);
+                }
+            }
+
+            return rays;
+        }
+
+
+        /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
+
+        public HashSet<SpatialUnit> ComputeConnectuvity (SpatialUnit testSU, List<SpatialUnit> targetSUs, List<GeometryBase> obstacles,  HashSet<SpatialUnit> visibleSU) {
+                     
+            List<Point3d> intersectionPoints = new List<Point3d>();
+            foreach (SpatialUnit targetSU in targetSUs) {
+                Point3d theClosestPoint = targetSU.Point3d;
+                Line raytmp = new Rhino.Geometry.Line(testSU.Point3d, targetSU.Point3d);
+                Curve ray = raytmp.ToNurbsCurve();
+
+                foreach (Brep obstacle in obstacles) {
+                    Curve[] overlapCurves;
+                    Point3d[] brepIntersectPoints;
+
+                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
+                    if (brepIntersectPoints.Count() == 0) visibleSU.Add(targetSU);
+
+                    /*else (brepIntersectPoints.Count() > 0) {
+                        Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
+                        if (testSU.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                            theClosestPoint = currClosestPoint;
+                        }
+                    }*/
+                }
+                //intersectionPoints.Add(theClosestPoint);
+            }
+            return visibleSU;
         }
 
 
@@ -241,4 +294,3 @@ namespace IsovistTest
         
     }
 }
-*/
