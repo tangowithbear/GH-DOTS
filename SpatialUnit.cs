@@ -42,6 +42,11 @@ namespace IsovistTest {
 
         ///...........................CONNECTIVITY......................... 
 
+
+        public int                  Connectivity_NumberOfVisibleSUs { get; set; }
+        public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
+        public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }
+
        /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
        /// public List<double> Distance                 { get; set; }
        /// public List<bool>   SolidTransparentObstacle { get; set; }

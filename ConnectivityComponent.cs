@@ -45,7 +45,7 @@ namespace IsovistTest
             //pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
 
             pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
-            pManager.AddPointParameter("All test points", "Ps", "A list of points ", GH_ParamAccess.list);
+            pManager.AddGenericParameter("All Spatial Units", "allSUs", "A list of Spatial Units ", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Static obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Dynamic obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
@@ -97,7 +97,7 @@ namespace IsovistTest
 
 
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
-            List<Point3d> allTestPoints = new List<Point3d>();
+            List<SpatialUnit> allSUs = new List<SpatialUnit>();
             int threshold = 20;
             List<GeometryBase> staticObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
             List<GeometryBase> dynamicObstacles = new List<GeometryBase>();
@@ -117,7 +117,7 @@ namespace IsovistTest
             Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
             if (!DA.GetData(0, ref obj)) return;
-            if (!DA.GetDataList<Point3d>(1, allTestPoints)) return;
+            if (!DA.GetDataList<SpatialUnit>(1, allSUs)) return;
             if (!DA.GetData(2, ref threshold)) return;
             if (!DA.GetDataList<GeometryBase>(3, staticObstacles)) return;
             if (!DA.GetDataList<GeometryBase>(4, dynamicObstacles)) return;
@@ -133,7 +133,7 @@ namespace IsovistTest
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
-            if (allTestPoints.Count <= 1)
+            if (allSUs.Count <= 1)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
                 return;
@@ -180,44 +180,44 @@ namespace IsovistTest
             // The actual functionality will be in a different method:
 
 
-            HashSet<SpatialUnit> visibleSU = new HashSet<SpatialUnit>();
+            HashSet<SpatialUnit> visibleSUs = new HashSet<SpatialUnit>();
+            List<Point3d>intersectionPoints = new List<Point3d>();
+
+
+
+            ComputeConnectivity(testSU, allSUs, obstacles, out visibleSUs, out intersectionPoints);
+            int visibleSUNumber = visibleSUs.AsEnumerable().Count();
+
+            List<Point3d> visibleSUTestPoints = new List<Point3d>();
+            foreach(SpatialUnit SU in visibleSUs) {
+                visibleSUTestPoints.Add(SU.Point3d);
+            }
+
+
+            testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
+            testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
+            testSU.Connectivity_VisibleUnits = visibleSUs;
 
 
             List<string> data = AggregateProperties(testSU);
 
-            
 
             DA.SetDataList(0, intersectionPoints);
-            DA.SetDataList(1, visibleSUNumber );
-            DA.SetData(2, visibleSUtestpoints);
+            DA.SetData(1, visibleSUNumber );
+            DA.SetDataList(2, visibleSUTestPoints);
             DA.SetDataList(3, data);
         }
 
-        ///..........................COMPUTE RAYS ...........................................
        
         
-       public List<Curve> ComputeRays(Point3d testPoint, List<Point3d> endPoints) {
-
-            List<Curve> rays = new List<Curve>();
-            List<double> distances = new List<double>();
-
-            {
-                foreach (Point3d endPoint in endPoints) {
-                    Line ray = new Rhino.Geometry.Line(testPoint, endPoint);
-                    Curve curveRay = ray.ToNurbsCurve();
-                    rays.Add(curveRay);
-                }
-            }
-
-            return rays;
-        }
 
 
         /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
 
-        public HashSet<SpatialUnit> ComputeConnectuvity (SpatialUnit testSU, List<SpatialUnit> targetSUs, List<GeometryBase> obstacles,  HashSet<SpatialUnit> visibleSU) {
-                     
-            List<Point3d> intersectionPoints = new List<Point3d>();
+        public HashSet<SpatialUnit> ComputeConnectivity (SpatialUnit testSU, List<SpatialUnit> targetSUs, List<GeometryBase> obstacles,  out HashSet<SpatialUnit> visibleSUs, 
+                                                         out List<Point3d> intersectionPoints) {
+            visibleSUs = new HashSet<SpatialUnit>();
+           intersectionPoints = new List<Point3d>();
             foreach (SpatialUnit targetSU in targetSUs) {
                 Point3d theClosestPoint = targetSU.Point3d;
                 Line raytmp = new Rhino.Geometry.Line(testSU.Point3d, targetSU.Point3d);
@@ -228,18 +228,19 @@ namespace IsovistTest
                     Point3d[] brepIntersectPoints;
 
                     var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
-                    if (brepIntersectPoints.Count() == 0) visibleSU.Add(targetSU);
+                    if (brepIntersectPoints.Count() == 0) visibleSUs.Add(targetSU);
 
-                    /*else (brepIntersectPoints.Count() > 0) {
-                        Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                        if (testSU.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
+                    else  {
+                        Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testSU.Point3d);
+                        if (testSU.Point3d.DistanceToSquared(currClosestPoint) < testSU.Point3d.DistanceToSquared(theClosestPoint)) {
                             theClosestPoint = currClosestPoint;
                         }
-                    }*/
+                    }
+                    intersectionPoints.Add(theClosestPoint);
                 }
-                //intersectionPoints.Add(theClosestPoint);
+
             }
-            return visibleSU;
+            return visibleSUs;
         }
 
 
@@ -254,7 +255,7 @@ namespace IsovistTest
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
-                if (propString.Contains("Visibility") || propString.Contains("SUID")) {
+                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
 
                     result.Add(propString);
                 }
