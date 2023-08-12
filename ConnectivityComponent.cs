@@ -201,7 +201,7 @@ namespace IsovistTest {
 
 
 
-
+        
 
         /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
 
