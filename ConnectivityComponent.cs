@@ -268,7 +268,7 @@ namespace IsovistTest {
 
 
             public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
-                int trueCount = visibleSUs.Count;
+                int trueCount = visibleSUs.Count + 1 ;
                 int totalCount = allSUs.Count;
                 var tmp = (trueCount / (double)totalCount) * 100;
                 return Math.Ceiling(tmp);
