@@ -65,6 +65,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Static intersection Points", "SIP", "Intersections points with static obstacles", GH_ParamAccess.list);
             //pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
             //pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddNumberParameter("Number of visible units", "N", "Number of visible units from of the test unit", GH_ParamAccess.item);
             pManager.AddPointParameter("Visible spatial units test Points", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
@@ -183,8 +184,10 @@ namespace IsovistTest {
             foreach (SpatialUnit SU in visibleSUs) {
                 visibleSUTestPoints.Add(SU.Point3d);
             }
+            double percentage = CalculatePercentage(visibleSUs, allSUs);
 
 
+            testSU.Connectivity_Percentage = percentage;
             testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
             testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
             testSU.Connectivity_VisibleUnits = visibleSUs;
@@ -194,9 +197,10 @@ namespace IsovistTest {
 
 
             DA.SetDataList(0, intersectionPoints);
-            DA.SetData(1, visibleSUNumber);
-            DA.SetDataList(2, visibleSUTestPoints);
-            DA.SetDataList(3, data);
+            DA.SetData(1, percentage);
+            DA.SetData(2, visibleSUNumber);
+            DA.SetDataList(3, visibleSUTestPoints);
+            DA.SetDataList(4, data);
         }
 
 
@@ -262,6 +266,13 @@ namespace IsovistTest {
                 return result;
             }
 
+
+            public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
+                int trueCount = visibleSUs.Count;
+                int totalCount = allSUs.Count;
+                var tmp = (trueCount / (double)totalCount) * 100;
+                return Math.Ceiling(tmp);
+            }
 
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 
