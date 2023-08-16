@@ -27,6 +27,9 @@ namespace IsovistTest {
 
         public Brep[]  Isovist_ExteriorIsovist   { get; set; }
         public double  Isovist_ExtIsovistArea    { get; set; }
+        public Point3d Isovist_CentreOfGravity   { get; set; }
+
+
 
         ///public string MainViewDirection;
         ///public double DriftMagnetude;

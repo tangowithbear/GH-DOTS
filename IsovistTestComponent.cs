@@ -67,6 +67,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBrepParameter("Interieor IsoVist", "IIV", "A brep representing interior firld of view for a given test point", GH_ParamAccess.list);
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
+            pManager.AddPointParameter("Center of Gravity", "CG", "Center of gravity", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
@@ -174,7 +175,7 @@ namespace IsovistTest {
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
             Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
-
+            Point3d gravityCentre = ComputeCentreOfGravity(interiorIsoVist);
 
 
 
@@ -185,9 +186,10 @@ namespace IsovistTest {
             // DA.SetData(0, spiral);
 
             testSU.Isovist_InteriorIsovist = interiorIsoVist;
-            testSU.Isovist_IntIsovistArea = interiorIsovistArea;
+            testSU.Isovist_IntIsovistArea  = interiorIsovistArea;
             testSU.Isovist_ExteriorIsovist = exteriorIsoVist;
-            testSU.Isovist_ExtIsovistArea = exteriorIsovistArea;
+            testSU.Isovist_ExtIsovistArea  = exteriorIsovistArea;
+            testSU.Isovist_CentreOfGravity = gravityCentre;
 
             List<string> data = AggregateProperties(testSU);
 
@@ -197,7 +199,8 @@ namespace IsovistTest {
             DA.SetDataList(2, allIntersectionPoints); ;
             DA.SetDataList(3, interiorIsoVist);
             DA.SetDataList(4, exteriorIsoVist);
-            DA.SetDataList(5, data);
+            DA.SetData(5, gravityCentre);
+            DA.SetDataList(6, data);
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -238,7 +241,7 @@ namespace IsovistTest {
 
         public List<Point3d> ComputeExtIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles, bool includeEndPoints) /// x=0 if endPoins not included
         {
-            List<Point3d> intersectionPoints = new List<Point3d>();
+            List<Point3d> extIntersectionPoints = new List<Point3d>();
             foreach (Curve ray in rays) {
                 Point3d theClosestPoint = ray.PointAtEnd;
                 foreach (Brep obstacle in obstacles) {
@@ -256,15 +259,15 @@ namespace IsovistTest {
                         }
                     }
                 }
-            intersectionPoints.Add(theClosestPoint);
+            extIntersectionPoints.Add(theClosestPoint);
             }
-            return intersectionPoints;
+            return extIntersectionPoints;
         }
 
 
         public List<Point3d> ComputeIntIntersectionPoints(Point3d testPoint, List<Point3d> endPoints, List<Curve> rays, List<GeometryBase> obstacles, bool includeEndPoints) /// x=0 if endPoins not included
         {
-            List<Point3d> intersectionPoints = new List<Point3d>();
+            List<Point3d> intIntersectionPoints = new List<Point3d>();
             foreach (Curve ray in rays) {
                 Point3d theClosestPoint = ray.PointAtEnd;
                 foreach (Brep obstacle in obstacles) {
@@ -275,17 +278,16 @@ namespace IsovistTest {
 
                     if (brepIntersectPoints.Count() > 0) {
                         Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testPoint);
-                        if ((testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)
-                            && (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(endPoints[0])))) {
+                        if (testPoint.DistanceToSquared(currClosestPoint) < testPoint.DistanceToSquared(theClosestPoint)) {
                             theClosestPoint = currClosestPoint;
-                        }
-                        intersectionPoints.Add(theClosestPoint);
+                        }  
                     }
                 }
-
-            }
-        
-            return intersectionPoints;
+                if (theClosestPoint != ray.PointAtEnd) {
+                    intIntersectionPoints.Add(theClosestPoint);
+                }
+            }     
+            return intIntersectionPoints;
         }
 
 
@@ -363,6 +365,11 @@ namespace IsovistTest {
             return result;
         }
 
+
+        public Point3d ComputeCentreOfGravity(Brep[]area) {
+            Point3d result = new Point3d(0,0,0);
+            return result;
+        }
 
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 
