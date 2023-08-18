@@ -369,7 +369,8 @@ namespace IsovistTest {
 
         public List<Point3d> ComputeVertices (List<Point3d>intPerimeterPoints) {
             List<Point3d> vertices = new List<Point3d>();
-            for (int i = 0; i < intPerimeterPoints.Count; i ++ ) {
+            intPerimeterPoints.Add(intPerimeterPoints[1]);
+            for (int i = 0; i < intPerimeterPoints.Count-1; i ++ ) {
                 Point3d Pt0 = intPerimeterPoints[i - 0];
                 Point3d Pt1 = intPerimeterPoints[i];
                 Point3d Pt2 = intPerimeterPoints[i+1];
