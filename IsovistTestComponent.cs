@@ -175,7 +175,8 @@ namespace IsovistTest {
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
             Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
-            Point3d gravityCentre = ComputeCentreOfGravity(interiorIsoVist);
+            List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
+            Point3d gravityCentre = ComputeCentreOfGravity(vertices);
 
 
 
@@ -366,9 +367,29 @@ namespace IsovistTest {
         }
 
 
-        public Point3d ComputeCentreOfGravity(Brep[]area) {
-            Point3d result = new Point3d(0,0,0);
-            return result;
+        public List<Point3d> ComputeVertices (List<Point3d>intPerimeterPoints) {
+            List<Point3d> vertices = new List<Point3d>();
+            for (int i = 0; i < intPerimeterPoints.Count; i ++ ) {
+                Point3d Pt0 = intPerimeterPoints[i - 0];
+                Point3d Pt1 = intPerimeterPoints[i];
+                Point3d Pt2 = intPerimeterPoints[i+1];
+                Line line = new Line(Pt0, Pt2);
+                Curve curve = line.ToNurbsCurve();
+
+                if (!curve.ClosestPoint(Pt1, out double t, 0.01)) {
+                    vertices.Add(Pt1);
+                } 
+            }
+            return vertices;
+        }
+
+        public Point3d ComputeCentreOfGravity(List <Point3d> vetices) {
+            List<double> allX = new List<double>();
+            List<double> allY = new List<double>();
+            List<double> allZ = new List<double>();
+
+            Point3d gravityPt = new Point3d(allX.Average(), allY.Average(), allZ.Average());
+            return gravityPt;
         }
 
         /// <summary>
