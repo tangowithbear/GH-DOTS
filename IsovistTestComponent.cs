@@ -389,6 +389,12 @@ namespace IsovistTest {
             List<double> allY = new List<double>();
             List<double> allZ = new List<double>();
 
+            foreach (Point3d vertice in vetices) {
+                allX.Add(vertice.X);
+                allY.Add(vertice.Y);
+                allZ.Add(vertice.Z);
+            }
+
             Point3d gravityPt = new Point3d(allX.Average(), allY.Average(), allZ.Average());
             return gravityPt;
         }
