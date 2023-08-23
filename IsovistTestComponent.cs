@@ -3,6 +3,7 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
 using Rhino.Collections;
 using Rhino.Geometry;
+using Rhino.Input.Custom;
 using Rhino.UI.ObjectProperties;
 using System;
 using System.Collections.Generic;
@@ -370,26 +371,28 @@ namespace IsovistTest {
         public List<Point3d> ComputeVertices (List<Point3d>intPerimeterPoints) {
             List<Point3d> vertices = new List<Point3d>();
             intPerimeterPoints.Add(intPerimeterPoints[1]);
-            for (int i = 0; i < intPerimeterPoints.Count-1; i ++ ) {
+            for (int i = 1; i < (intPerimeterPoints.Count - 2); i ++ ) {
                 Point3d Pt0 = intPerimeterPoints[i - 0];
                 Point3d Pt1 = intPerimeterPoints[i];
                 Point3d Pt2 = intPerimeterPoints[i+1];
-                Line line = new Line(Pt0, Pt2);
-                Curve curve = line.ToNurbsCurve();
+                LineCurve lineCurve = new LineCurve(Pt0, Pt2);
+                //Curve curve = line.ToNurbsCurve();
 
-                if (!curve.ClosestPoint(Pt1, out double t, 0.01)) {
+                lineCurve.ClosestPoint(Pt1, out double t, 0.01);
+                Point3d closestPt = lineCurve.PointAt(t);
+                if (Pt1.DistanceToSquared(closestPt) < 0.0001) {
                     vertices.Add(Pt1);
                 } 
             }
             return vertices;
         }
 
-        public Point3d ComputeCentreOfGravity(List <Point3d> vetices) {
+        public Point3d ComputeCentreOfGravity(List <Point3d> vertices) {
             List<double> allX = new List<double>();
             List<double> allY = new List<double>();
             List<double> allZ = new List<double>();
 
-            foreach (Point3d vertice in vetices) {
+            foreach (Point3d vertice in vertices) {
                 allX.Add(vertice.X);
                 allY.Add(vertice.Y);
                 allZ.Add(vertice.Z);
