@@ -177,6 +177,7 @@ namespace IsovistTest {
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
             Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
+            // List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
             List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
             Point3d gravityCentre = ComputeCentreOfGravity(vertices);
 
@@ -328,6 +329,16 @@ namespace IsovistTest {
             return perimeterCurve;
         }
 
+        public List<Point3d> GetVertices(Curve perimeterCurve) {
+            List<Point3d> verts = new List<Point3d>();
+            perimeterCurve.GetNextDiscontinuity(Continuity.C1_continuous, 0.0, 1.0, out double t);
+            verts.Add(perimeterCurve.PointAt(t));
+            return verts;
+        }
+
+        
+
+
         public Brep[] CreateIsoVist(Curve perimeterCurve) {
             Brep[] area = Brep.CreatePlanarBreps(perimeterCurve, 0.01);
             return area;
@@ -370,22 +381,27 @@ namespace IsovistTest {
         }
 
 
+
+
         public List<Point3d> ComputeVertices (List<Point3d>intPerimeterPoints) {
             List<Point3d> vertices = new List<Point3d>();
             intPerimeterPoints.Add(intPerimeterPoints[1]);
-            for (int i = 1; i < (intPerimeterPoints.Count - 1); i ++ ) {
-                Point3d Pt0 = intPerimeterPoints[i - 0];
+            for (int i = 1; i < (intPerimeterPoints.Count - 2); i++ ) {
+                Point3d Pt0 = intPerimeterPoints[i - 1];
                 Point3d Pt1 = intPerimeterPoints[i];
-                Point3d Pt2 = intPerimeterPoints[i+1];
+                Point3d Pt2 = intPerimeterPoints[i + 1];
+
                 LineCurve lineCurve = new LineCurve(Pt0, Pt2);
                 lineCurve.ClosestPoint(Pt1, out double t, 0.01);
                 Point3d closestPt = lineCurve.PointAt(t);
 
-                if (Pt1.DistanceToSquared(closestPt) < 0.0001) {
+                if (Pt1.DistanceToSquared(closestPt) > 0.00000001) {
                     vertices.Add(Pt1);
                 } 
 
-                /*if ((Pt2.X - Pt0.X) / (Pt1.X - Pt0.X) != (Pt2.Y - Pt0.Y) / (Pt1.Y - Pt0.Y)) {
+                /*double tol = 0.001;
+
+                if (Math.Pow(((Pt2.X - Pt0.X) / (Pt1.X - Pt0.X)) - ((Pt2.Y - Pt0.Y) / (Pt1.Y - Pt0.Y)), 2) > tol) {
                     vertices.Add(Pt1);
                 }*/
             }
