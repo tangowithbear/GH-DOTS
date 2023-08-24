@@ -70,6 +70,7 @@ namespace IsovistTest {
             pManager.AddBrepParameter("Exterior Isovist", "EIV", "A brep representing a field of view for a given test point", GH_ParamAccess.list);
             pManager.AddPointParameter("Center of Gravity", "CG", "Center of gravity", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
+            pManager.AddPointParameter("Vertices", "V", "vertices", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -198,11 +199,12 @@ namespace IsovistTest {
 
             DA.SetDataList(0, endPoints);
             DA.SetDataList(1, interiorIntersectionPoints);
-            DA.SetDataList(2, allIntersectionPoints); ;
+            DA.SetDataList(2, allIntersectionPoints); 
             DA.SetDataList(3, interiorIsoVist);
             DA.SetDataList(4, exteriorIsoVist);
             DA.SetData(5, gravityCentre);
             DA.SetDataList(6, data);
+            DA.SetDataList(7, vertices);
         }
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(Point3d testPoint, int radius, int resolution) {
@@ -371,18 +373,21 @@ namespace IsovistTest {
         public List<Point3d> ComputeVertices (List<Point3d>intPerimeterPoints) {
             List<Point3d> vertices = new List<Point3d>();
             intPerimeterPoints.Add(intPerimeterPoints[1]);
-            for (int i = 1; i < (intPerimeterPoints.Count - 2); i ++ ) {
+            for (int i = 1; i < (intPerimeterPoints.Count - 1); i ++ ) {
                 Point3d Pt0 = intPerimeterPoints[i - 0];
                 Point3d Pt1 = intPerimeterPoints[i];
                 Point3d Pt2 = intPerimeterPoints[i+1];
                 LineCurve lineCurve = new LineCurve(Pt0, Pt2);
-                //Curve curve = line.ToNurbsCurve();
-
                 lineCurve.ClosestPoint(Pt1, out double t, 0.01);
                 Point3d closestPt = lineCurve.PointAt(t);
+
                 if (Pt1.DistanceToSquared(closestPt) < 0.0001) {
                     vertices.Add(Pt1);
                 } 
+
+                /*if ((Pt2.X - Pt0.X) / (Pt1.X - Pt0.X) != (Pt2.Y - Pt0.Y) / (Pt1.Y - Pt0.Y)) {
+                    vertices.Add(Pt1);
+                }*/
             }
             return vertices;
         }
