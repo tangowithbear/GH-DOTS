@@ -10,15 +10,17 @@ using System.Net;
 namespace IsovistTest {
     public class SpatialUnit {
 
-        public string SUID { get; set; }
+        public string SUID     { get; set; }
         public Point3d Point3d { get; set; }
 
         /// public double Height { get; set; }
         ///public int Level { get; set; }
 
-
-        ///public List <Polyline> SkyPolygone  { get; set; }
-        ///public List <Polyline> GroundPolygone {  }
+        ///...........................VIEW CONTENT.......................
+        
+        public List<double> ViewContent_SkyPercentage      { get; set; }
+        public List<double> ViewContent_GroundPercentage   { get; set; }
+        public List<double> ViewContent_BuiltPercentage    { get; set; }
 
         /// ...........................ISOVIST...........................
 
@@ -28,8 +30,7 @@ namespace IsovistTest {
         public Brep[]  Isovist_ExteriorIsovist   { get; set; }
         public double  Isovist_ExtIsovistArea    { get; set; }
         public Point3d Isovist_CentreOfGravity   { get; set; }
-
-
+        public double  Isovist_DriftMagnitude    { get; set; }
 
         ///public string MainViewDirection;
         ///public double DriftMagnetude;
@@ -45,7 +46,7 @@ namespace IsovistTest {
 
         ///...........................CONNECTIVITY......................... 
 
-        public double                  Connectivity_Percentage { get; set; }
+        public double               Connectivity_Percentage         { get; set; }
         public int                  Connectivity_NumberOfVisibleSUs { get; set; }
         public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
         public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }

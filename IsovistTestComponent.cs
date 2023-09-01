@@ -395,7 +395,7 @@ namespace IsovistTest {
                 lineCurve.ClosestPoint(Pt1, out double t, 0.01);
                 Point3d closestPt = lineCurve.PointAt(t);
 
-                if (Pt1.DistanceToSquared(closestPt) > 0.00000001) {
+                if (Pt1.DistanceToSquared(closestPt) > 0.0000001) {
                     vertices.Add(Pt1);
                 } 
 
