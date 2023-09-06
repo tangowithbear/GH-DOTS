@@ -22,7 +22,7 @@ namespace IsovistTest {
         public VisibilityComponent()
           : base("Visibility", "Visibility",
             "Check if you see an object",
-            "IndoorSpaceManager", "Field of view") {
+            "IndoorSpaceManager", "Vision") {
         }
 
         /// <summary>

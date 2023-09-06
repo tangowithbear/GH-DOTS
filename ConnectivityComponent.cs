@@ -23,7 +23,7 @@ namespace IsovistTest {
         public ConnectivityComponent()
           : base("Visual connectivity", "Connectivity",
             "Check the visual connections",
-            "IndoorSpaceManager", "Field of view") {
+            "IndoorSpaceManager", "Vision") {
         }
 
         /// <summary>

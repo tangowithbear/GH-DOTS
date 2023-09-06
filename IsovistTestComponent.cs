@@ -23,7 +23,7 @@ namespace IsovistTest {
         public IsovistTestComponent()
           : base("IsovistTest", "IsoVist",
             "Construct an Isovist and evaluate data",
-            "IndoorSpaceManager", "Field of view") {
+            "IndoorSpaceManager", "Vision") {
         }
 
         /// <summary>

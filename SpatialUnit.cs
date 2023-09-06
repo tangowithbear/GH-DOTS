@@ -18,9 +18,9 @@ namespace IsovistTest {
 
         ///...........................VIEW CONTENT.......................
         
-        public List<double> ViewContent_SkyPercentage      { get; set; }
-        public List<double> ViewContent_GroundPercentage   { get; set; }
-        public List<double> ViewContent_BuiltPercentage    { get; set; }
+        public double ViewContent_SkyPercentage      { get; set; }
+        public double ViewContent_GroundPercentage   { get; set; }
+        public double ViewContent_BuiltPercentage    { get; set; }
 
         /// ...........................ISOVIST...........................
 
