@@ -60,6 +60,7 @@ namespace IsovistTest {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("Test Point", "TP", "Test Point", GH_ParamAccess.item);
+            pManager.AddNumberParameter("values", "V", "Calculated numerical values", GH_ParamAccess.list);
             pManager.AddSurfaceParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.item);
             pManager.AddSurfaceParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.item);
             pManager.AddSurfaceParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.item);
@@ -86,11 +87,12 @@ namespace IsovistTest {
             //int turns = 0;
 
 
-            Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
+            Point3d testPoint = Point3d.Unset;   
+        
             double skyPercentage = 0.00;
             double groundPercentage = 0.00;
             double builtPercentage = 0.00;
-
+            List<double> numValues = new List<double> { skyPercentage, groundPercentage, builtPercentage};
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -164,9 +166,61 @@ namespace IsovistTest {
             List<string> data = AggregateProperties(testSU);
 
 
-            DA.SetDataList(0, intersectionPoints);
-            DA.SetData(1, percentage);
-            DA.SetData(2, visibleSUNumber);
-            DA.SetDataList(3, visibleSUTestPoints);
+            DA.SetData(0, testPoint);
+            DA.SetDataList(1, numValues);
+            DA.SetData(1, skyViz);
+            DA.SetData(2, builtViz);
+            DA.SetData(3, groundViz);
             DA.SetDataList(4, data);
         }
+
+
+
+
+        public List<string> AggregateProperties(SpatialUnit testSU) {
+
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props) {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
+
+                    result.Add(propString);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// The Exposure property controls where in the panel a component icon 
+        /// will appear. There are seven possible locations (primary to septenary), 
+        /// each of which can be combined with the GH_Exposure.obscure flag, which 
+        /// ensures the component will only be visible on panel dropdowns.
+        /// </summary>
+        public override GH_Exposure Exposure => GH_Exposure.primary;
+
+        /// <summary>
+        /// Provides an Icon for every component that will be visible in the User Interface.
+        /// Icons need to be 24x24 pixels.
+        /// You can add image files to your project resources and access them like this:
+        /// return Resources.IconForThisComponent;
+        /// </summary>
+        /// protected override System.Drawing.Bitmap Icon => Properties.Resources.;
+
+        protected override System.Drawing.Bitmap Icon => null;
+
+        /// <summary>
+        /// Each component must have a unique Guid to identify it. 
+        /// It is vital this Guid doesn't change otherwise old ghx files 
+        /// that use the old ID will partially fail during loading.
+        /// </summary>
+        public override Guid ComponentGuid => new Guid("CF1B8304-B8E9-4103-AFA2-B0E1EF1CF5BC");
+
+    }
+}
