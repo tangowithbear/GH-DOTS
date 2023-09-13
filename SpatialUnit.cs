@@ -12,6 +12,7 @@ namespace IsovistTest {
 
         public string SUID     { get; set; }
         public Point3d Point3d { get; set; }
+        public double Area { get; set; }
 
         /// public double Height { get; set; }
         ///public int Level { get; set; }
@@ -60,7 +61,7 @@ namespace IsovistTest {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
-
+            this.Area = 1.00;
 
 
             this.Visibility_Percentage = 0;
@@ -70,3 +71,4 @@ namespace IsovistTest {
         }
     }
 }
+

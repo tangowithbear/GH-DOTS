@@ -1,6 +1,7 @@
 ﻿using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
+using Grasshopper.Kernel.Geometry;
 using Rhino.Collections;
 using Rhino.Geometry;
 using Rhino.Input.Custom;
@@ -61,10 +62,11 @@ namespace IsovistTest {
 
             pManager.AddPointParameter("Test Point", "TP", "Test Point", GH_ParamAccess.item);
             pManager.AddNumberParameter("values", "V", "Calculated numerical values", GH_ParamAccess.list);
-            pManager.AddSurfaceParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.item);
-            pManager.AddSurfaceParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.item);
-            pManager.AddSurfaceParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.item);
+            pManager.AddBrepParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.item);
+            pManager.AddBrepParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.item);
+            pManager.AddBrepParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
+           
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
@@ -161,7 +163,7 @@ namespace IsovistTest {
 
 
 
-
+            Brep skyViz = CreateSkyViz(testSU.Point3d, testSU.Area, skyPercentage);
 
             List<string> data = AggregateProperties(testSU);
 
@@ -174,6 +176,12 @@ namespace IsovistTest {
             DA.SetDataList(4, data);
         }
 
+        public Brep CreateSkyViz(Point3d centerPt, double size, double skyValue) {
+            Circle innerCircle = new Circle(centerPt, skyValue);
+            Circle outerCircle = new Circle(centerPt, size);
+            Brep skyViz = Brep.CreateFromLoft(new List<Curve> { innerCircle.ToNurbsCurve(), outerCircle.ToNurbsCurve() }, Point3d.Unset, Point3d.Unset, LoftType.Straight, false)[0];
+            return skyViz;
+        }
 
 
 
