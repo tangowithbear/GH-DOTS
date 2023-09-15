@@ -163,7 +163,9 @@ namespace IsovistTest {
 
 
 
-            Brep skyViz = CreateSkyViz(testSU.Point3d, testSU.Area, skyPercentage);
+            Brep skyViz    = CreateChartViz(testSU.Point3d, testSU.Area, skyPercentage);
+            Brep builtViz  = CreateChartViz(testSU.Point3d, skyPercentage, groundPercentage);
+            Brep groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.00);
 
             List<string> data = AggregateProperties(testSU);
 
@@ -176,12 +178,13 @@ namespace IsovistTest {
             DA.SetDataList(4, data);
         }
 
-        public Brep CreateSkyViz(Point3d centerPt, double size, double skyValue) {
-            Circle innerCircle = new Circle(centerPt, skyValue);
-            Circle outerCircle = new Circle(centerPt, size);
+        public Brep CreateChartViz(Point3d centerPt, double upperValue, double downValue) {
+            Circle innerCircle = new Circle(centerPt, downValue);
+            Circle outerCircle = new Circle(centerPt, upperValue);
             Brep skyViz = Brep.CreateFromLoft(new List<Curve> { innerCircle.ToNurbsCurve(), outerCircle.ToNurbsCurve() }, Point3d.Unset, Point3d.Unset, LoftType.Straight, false)[0];
             return skyViz;
         }
+
 
 
 
