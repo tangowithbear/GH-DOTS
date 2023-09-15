@@ -231,7 +231,7 @@ namespace IsovistTest {
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("CF1B8304-B8E9-4103-AFA2-B0E1EF1CF5BC");
+        public override Guid ComponentGuid => new Guid("952E8448-E6F8-47B8-BCDF-FC4F5F698F3B");
 
     }
 }
