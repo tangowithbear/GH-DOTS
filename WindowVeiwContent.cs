@@ -61,10 +61,10 @@ namespace IsovistTest {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("Test Point", "TP", "Test Point", GH_ParamAccess.item);
-            pManager.AddNumberParameter("values", "V", "Calculated numerical values", GH_ParamAccess.list);
-            pManager.AddBrepParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.item);
-            pManager.AddBrepParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.item);
-            pManager.AddBrepParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.item);
+            //pManager.AddNumberParameter("values", "V", "Calculated numerical values", GH_ParamAccess.list);
+            pManager.AddBrepParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.list);
+            pManager.AddBrepParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.list);
+            pManager.AddBrepParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.list);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
            
 
@@ -94,7 +94,7 @@ namespace IsovistTest {
             double skyPercentage = 0.00;
             double groundPercentage = 0.00;
             double builtPercentage = 0.00;
-            List<double> numValues = new List<double> { skyPercentage, groundPercentage, builtPercentage};
+            //List<double> numValues = new List<double> { skyPercentage, groundPercentage, builtPercentage};
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -163,26 +163,26 @@ namespace IsovistTest {
 
 
 
-            Brep skyViz    = CreateChartViz(testSU.Point3d, testSU.Area, skyPercentage);
-            Brep builtViz  = CreateChartViz(testSU.Point3d, skyPercentage, groundPercentage);
-            Brep groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.00);
+            Brep[] skyViz    = CreateChartViz(testSU.Point3d, testSU.Area, skyPercentage);
+            Brep[] builtViz  = CreateChartViz(testSU.Point3d, skyPercentage, groundPercentage);
+            Brep[] groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.00);
 
             List<string> data = AggregateProperties(testSU);
 
 
             DA.SetData(0, testPoint);
-            DA.SetDataList(1, numValues);
+           // DA.SetDataList(1, numValues);
             DA.SetData(1, skyViz);
             DA.SetData(2, builtViz);
             DA.SetData(3, groundViz);
             DA.SetDataList(4, data);
         }
 
-        public Brep CreateChartViz(Point3d centerPt, double upperValue, double downValue) {
+        public Brep[] CreateChartViz(Point3d centerPt, double upperValue, double downValue) {
             Circle innerCircle = new Circle(centerPt, downValue);
             Circle outerCircle = new Circle(centerPt, upperValue);
-            Brep skyViz = Brep.CreateFromLoft(new List<Curve> { innerCircle.ToNurbsCurve(), outerCircle.ToNurbsCurve() }, Point3d.Unset, Point3d.Unset, LoftType.Straight, false)[0];
-            return skyViz;
+            Brep[] chartViz = Brep.CreateFromLoft(new List<Curve> { innerCircle.ToNurbsCurve(), outerCircle.ToNurbsCurve() }, Point3d.Unset, Point3d.Unset, LoftType.Straight, false);
+            return chartViz;
         }
 
 
@@ -199,7 +199,7 @@ namespace IsovistTest {
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
-                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
+                if (propString.Contains("ViewContent") || propString.Contains("SUID")) {
 
                     result.Add(propString);
                 }
