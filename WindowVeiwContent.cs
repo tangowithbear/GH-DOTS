@@ -62,9 +62,9 @@ namespace IsovistTest {
 
             pManager.AddPointParameter("Test Point", "TP", "Test Point", GH_ParamAccess.item);
             //pManager.AddNumberParameter("values", "V", "Calculated numerical values", GH_ParamAccess.list);
-            pManager.AddBrepParameter("SkyProcentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.list);
-            pManager.AddBrepParameter("GroundProcentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.list);
-            pManager.AddBrepParameter("GroundProcentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.list);
+            pManager.AddBrepParameter("SkyPercentage", "Sky", "Visible Sky Proportional Chart", GH_ParamAccess.list);
+            pManager.AddBrepParameter("GroundPercentage", "Ground", "Visible Ground Proportional Chart", GH_ParamAccess.list);
+            pManager.AddBrepParameter("BuildPercentage", "Built", "Visible Buildings Proportional Chart", GH_ParamAccess.list);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
            
 
@@ -163,24 +163,24 @@ namespace IsovistTest {
 
 
 
-            Brep[] skyViz    = CreateChartViz(testSU.Point3d, testSU.Area, skyPercentage);
-            Brep[] builtViz  = CreateChartViz(testSU.Point3d, skyPercentage, groundPercentage);
-            Brep[] groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.00);
+            Brep[] skyViz    = CreateChartViz(testSU.Point3d, testSU.Area * 100, (testSU.Area * 100) - skyPercentage);
+            Brep[] builtViz  = CreateChartViz(testSU.Point3d, groundPercentage + builtPercentage, groundPercentage);
+            Brep[] groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.5);
 
             List<string> data = AggregateProperties(testSU);
 
 
             DA.SetData(0, testPoint);
            // DA.SetDataList(1, numValues);
-            DA.SetData(1, skyViz);
-            DA.SetData(2, builtViz);
-            DA.SetData(3, groundViz);
+            DA.SetDataList(1, skyViz);
+            DA.SetDataList(2, builtViz);
+            DA.SetDataList(3, groundViz);
             DA.SetDataList(4, data);
         }
 
         public Brep[] CreateChartViz(Point3d centerPt, double upperValue, double downValue) {
-            Circle innerCircle = new Circle(centerPt, downValue);
-            Circle outerCircle = new Circle(centerPt, upperValue);
+            Circle innerCircle = new Circle(centerPt, downValue / 100);
+            Circle outerCircle = new Circle(centerPt, upperValue / 100);
             Brep[] chartViz = Brep.CreateFromLoft(new List<Curve> { innerCircle.ToNurbsCurve(), outerCircle.ToNurbsCurve() }, Point3d.Unset, Point3d.Unset, LoftType.Straight, false);
             return chartViz;
         }
