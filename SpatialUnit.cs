@@ -25,18 +25,23 @@ namespace IsovistTest {
 
         /// ...........................ISOVIST...........................
 
-        public Brep[]  Isovist_InteriorIsovist   { get; set; }
-        public double  Isovist_IntIsovistArea    { get; set; }
 
-        public Brep[]  Isovist_ExteriorIsovist   { get; set; }
-        public double  Isovist_ExtIsovistArea    { get; set; }
-        public Point3d Isovist_CentreOfGravity   { get; set; }
-        public double  Isovist_DriftMagnitude    { get; set; }
+
+        public Brep[]  Isovist_ExteriorIsovist          { get; set; }
+        public double  Isovist_ExtIsovistArea           { get; set; }
+        public double  Isovist_ExteriorCompactness      { get; set; }
+        public double  Isovist_ExteriorOcclusivity      { get; set; }
+
+        public Brep[]  Isovist_InteriorIsovist          { get; set; }
+        public double  Isovist_IntIsovistArea           { get; set; }
+        public Point3d Isovist_InteriorCentreOfGravity  { get; set; }
+        public double  Isovist_InteriorDriftMagnitude   { get; set; }
+        public double  Isovist_InteriorOcclusivity      { get; set; }
+        public double  Isovist_InteriorCompactness      { get; set; }
+
 
         ///public string MainViewDirection;
-        ///public double DriftMagnetude;
         ///public double Max Radius;
-        ///public double Compactness;
         ///public double Skewnes;
 
         /// ...........................VISIBILITY...........................

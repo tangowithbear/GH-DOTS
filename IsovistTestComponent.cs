@@ -179,12 +179,12 @@ namespace IsovistTest {
 
             // List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
             List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
-            Point3d gravityCentre = ComputeCentreOfGravity(vertices);
+            Point3d intGravityCentre = ComputeCentreOfGravity(vertices);
 
+      
+            Double extCompactness = ComputeCopmactness(exteriorPerimeter.GetLength(), exteriorIsovistArea);
+            Double intDriftMagnitude = (testSU.Point3d - intGravityCentre).Length;
 
-
-            //Brep interiorIsoVist = 
-            //Brep exteriorIsovist =
 
             // Finally assign the spiral to the output parameter.
             // DA.SetData(0, spiral);
@@ -193,7 +193,9 @@ namespace IsovistTest {
             testSU.Isovist_IntIsovistArea  = interiorIsovistArea;
             testSU.Isovist_ExteriorIsovist = exteriorIsoVist;
             testSU.Isovist_ExtIsovistArea  = exteriorIsovistArea;
-            testSU.Isovist_CentreOfGravity = gravityCentre;
+            testSU.Isovist_InteriorCentreOfGravity = intGravityCentre;
+            testSU.Isovist_InteriorDriftMagnitude =
+            testSU.Isovist_ExteriorCompactness = extCompactness;
 
             List<string> data = AggregateProperties(testSU);
 
@@ -203,7 +205,7 @@ namespace IsovistTest {
             DA.SetDataList(2, allIntersectionPoints); 
             DA.SetDataList(3, interiorIsoVist);
             DA.SetDataList(4, exteriorIsoVist);
-            DA.SetData(5, gravityCentre);
+            DA.SetData(5, intGravityCentre);
             DA.SetDataList(6, data);
             DA.SetDataList(7, vertices);
         }
@@ -338,7 +340,6 @@ namespace IsovistTest {
 
         
 
-
         public Brep[] CreateIsoVist(Curve perimeterCurve) {
             Brep[] area = Brep.CreatePlanarBreps(perimeterCurve, 0.01);
             return area;
@@ -348,13 +349,19 @@ namespace IsovistTest {
 
         ///.........................COMPUTE ISOVIST AREA.....................................
 
-
-
         public Double ComputeIsoVistArea(Brep[] area)
         {
             AreaMassProperties mp = AreaMassProperties.Compute(area, true, false, false, false);
             return mp.Area;
         }
+
+        ///.........................COMPUTE COMPACTNESS.....................................
+
+        public Double ComputeCopmactness(double perimeter, double area) {
+            double compactness = Math.Pow(perimeter, 2) / (area * Math.PI * 4);
+            return compactness;
+        }
+
 
 
         public List<string> AggregateProperties(SpatialUnit testSU)
@@ -422,6 +429,11 @@ namespace IsovistTest {
             Point3d gravityPt = new Point3d(allX.Average(), allY.Average(), allZ.Average());
             return gravityPt;
         }
+
+        ///.........................COMPUTE .....................................
+        
+
+
 
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 
