@@ -3,6 +3,7 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
 using Rhino.Collections;
 using Rhino.Geometry;
+using Rhino.Geometry.Intersect;
 using Rhino.Input.Custom;
 using Rhino.UI.ObjectProperties;
 using System;
@@ -173,6 +174,7 @@ namespace IsovistTest {
 
 
             HashSet<SpatialUnit> visibleSUs = new HashSet<SpatialUnit>();
+            List<SpatialUnit> visibleSSList = visibleSUs.ToList();
             List<Point3d> intersectionPoints = new List<Point3d>();
 
 
@@ -205,7 +207,7 @@ namespace IsovistTest {
 
 
 
-        
+
 
         /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
 
@@ -239,40 +241,61 @@ namespace IsovistTest {
 
                     if (obstacleIntersectPoints.Count() == 0) visibleSUs.Add(targetSU);
                 }
-     
+
             }
             return visibleSUs;
         }
 
+        public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
+            int trueCount = visibleSUs.Count + 1;
+            int totalCount = allSUs.Count;
+            var tmp = (trueCount / (double)totalCount) * 100;
+            return Math.Ceiling(tmp);
+        }
 
 
-            public List<string> AggregateProperties(SpatialUnit testSU) {
+        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts) {
 
-                List<string> result = new List<string>();
+            Sphere targetSphere = new Sphere(SU.Point3d, Math.Sqrt(SU.Area) / 2);
+            //List <Line> connections = new List <Line>();
+            int throughtVision = 0;
 
-                Type t = testSU.GetType();
-                PropertyInfo[] props = t.GetProperties();
-                foreach (var property in props) {
-
-                    //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
-                    string propString = $"{property.Name} : {property.GetValue(testSU)}";
-
-                    if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
-
-                        result.Add(propString);
+            for (int j = 0; j < visiblePts.Count - 1; j++) {
+                for (int i = 1; i < visiblePts.Count - 1; i++) {
+                    Line connection = new Line(visiblePts[j], visiblePts[i]);
+                    var intersection = Rhino.Geometry.Intersect.Intersection.LineSphere(connection, targetSphere, out Point3d intersectionPoint1, out Point3d intersectionPoint2);
+                    if (intersection != 0) {
+                        throughtVision++;
                     }
                 }
+            }
+            return throughtVision;
+        }
 
-                return result;
+
+
+        public List<string> AggregateProperties(SpatialUnit testSU) {
+
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props) {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
+
+                    result.Add(propString);
+                }
             }
 
+            return result;
+        }
 
-            public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
-                int trueCount = visibleSUs.Count + 1 ;
-                int totalCount = allSUs.Count;
-                var tmp = (trueCount / (double)totalCount) * 100;
-                return Math.Ceiling(tmp);
-            }
+
+
 
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 

@@ -46,9 +46,9 @@ namespace IsovistTest {
 
         /// ...........................VISIBILITY...........................
 
-        public double Visibility_Percentage  { get; set; }
-        public int    Visibility_Threshold   { get; set; }
-        public bool   Visibility_Visibility  { get; set; }
+        public double Visibility_Percentage     { get; set; }
+        public int    Visibility_Threshold      { get; set; }
+        public bool   Visibility_Visibility     { get; set; }
 
         ///...........................CONNECTIVITY......................... 
 
@@ -56,13 +56,14 @@ namespace IsovistTest {
         public int                  Connectivity_NumberOfVisibleSUs { get; set; }
         public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
         public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }
+        public int                  Connectivity_ThroughVision      { get; set; }
 
-       /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
-       /// public List<double> Distance                 { get; set; }
-       /// public List<bool>   SolidTransparentObstacle { get; set; }
+        /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
+        /// public List<double> Distance                 { get; set; }
+        /// public List<bool>   SolidTransparentObstacle { get; set; }
 
 
-    public  SpatialUnit(Point3d point3d) {
+        public  SpatialUnit(Point3d point3d) {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
