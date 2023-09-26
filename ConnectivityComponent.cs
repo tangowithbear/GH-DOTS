@@ -69,6 +69,9 @@ namespace IsovistTest {
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddNumberParameter("Number of visible units", "N", "Number of visible units from of the test unit", GH_ParamAccess.item);
             pManager.AddPointParameter("Visible spatial units test Points", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Through vision", "TV", "Number of gaze intersections", GH_ParamAccess.item);
+           // pManager.AddGeometryParameter("Sphere", "S", "SPHERE", GH_ParamAccess.item);
+           // pManager.AddLineParameter("Connections", "Con", "Connections", GH_ParamAccess.list);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
@@ -174,7 +177,7 @@ namespace IsovistTest {
 
 
             HashSet<SpatialUnit> visibleSUs = new HashSet<SpatialUnit>();
-            List<SpatialUnit> visibleSSList = visibleSUs.ToList();
+            List<SpatialUnit> visibleSUList = visibleSUs.ToList();
             List<Point3d> intersectionPoints = new List<Point3d>();
 
 
@@ -187,12 +190,14 @@ namespace IsovistTest {
                 visibleSUTestPoints.Add(SU.Point3d);
             }
             double percentage = CalculatePercentage(visibleSUs, allSUs);
+            int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles);
 
 
             testSU.Connectivity_Percentage = percentage;
             testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
             testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
             testSU.Connectivity_VisibleUnits = visibleSUs;
+            testSU.Connectivity_ThroughVision = throughVision;
 
 
             List<string> data = AggregateProperties(testSU);
@@ -202,7 +207,10 @@ namespace IsovistTest {
             DA.SetData(1, percentage);
             DA.SetData(2, visibleSUNumber);
             DA.SetDataList(3, visibleSUTestPoints);
-            DA.SetDataList(4, data);
+            DA.SetData(4, throughVision);
+            //DA.SetData(5, targetSphere);
+            //DA.SetDataList(6, connections);
+            DA.SetDataList(5, data);
         }
 
 
@@ -254,18 +262,29 @@ namespace IsovistTest {
         }
 
 
-        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts) {
+        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts, List<GeometryBase>obstacles) {
 
-            Sphere targetSphere = new Sphere(SU.Point3d, Math.Sqrt(SU.Area) / 2);
-            //List <Line> connections = new List <Line>();
+            Sphere xSphere = new Sphere(SU.Point3d, Math.Sqrt(SU.Area) / 2);
+            Brep targetSphere = xSphere.ToBrep();
+            //connections = new List <LineCurve>();
             int throughtVision = 0;
+            Curve[] overlapCurves;
+            Point3d[] brepIntersectPoints1;
+            Point3d[] brepIntersectPoints;
 
-            for (int j = 0; j < visiblePts.Count - 1; j++) {
-                for (int i = 1; i < visiblePts.Count - 1; i++) {
-                    Line connection = new Line(visiblePts[j], visiblePts[i]);
-                    var intersection = Rhino.Geometry.Intersect.Intersection.LineSphere(connection, targetSphere, out Point3d intersectionPoint1, out Point3d intersectionPoint2);
-                    if (intersection != 0) {
-                        throughtVision++;
+            for (int j = 0; j < visiblePts.Count; j++) {
+                for (int i = j + 1; i < visiblePts.Count; i++) {
+                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);
+
+                    foreach (Brep obstacle in obstacles) {
+                        var obstacleIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);
+                        if (brepIntersectPoints1.Count() == 0) {
+                            var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
+                            if (brepIntersectPoints.Count() > 1) {
+                                throughtVision++;
+                                //connections.Add(connection);
+                            }
+                        }
                     }
                 }
             }
