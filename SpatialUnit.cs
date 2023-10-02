@@ -27,18 +27,20 @@ namespace IsovistTest {
 
 
 
-        public Brep[]  Isovist_ExteriorIsovist          { get; set; }
-        public double  Isovist_ExtIsovistArea           { get; set; }
-        public double  Isovist_ExteriorCompactness      { get; set; }
-        public double  Isovist_ExteriorOcclusivity      { get; set; }
+        public Brep[]  Isovist_Ext_Isovist          { get; set; }
+        public double  Isovist_Ext_Area             { get; set; }
+        public double  Isovist_Ext_Perimeter        { get; set; }
+        public double  Isovist_Ext_Compactness      { get; set; }
+        public double  Isovist_Ext_Occlusivity      { get; set; }
 
-        public Brep[]  Isovist_InteriorIsovist          { get; set; }
-        public double  Isovist_IntIsovistArea           { get; set; }
-        public Point3d Isovist_InteriorCentreOfGravity  { get; set; }
-        public int     Isovist_InteriorNumberOfVertices { get; set; }
-        public double  Isovist_InteriorDriftMagnitude   { get; set; }
-        public double  Isovist_InteriorOcclusivity      { get; set; }
-        public double  Isovist_InteriorCompactness      { get; set; }
+        public Brep[]  Isovist_Int_Isovist          { get; set; }
+        public double  Isovist_Int_Area             { get; set; }
+        public double  Isovist_Int_Perimeter        { get; set; }
+        public Point3d Isovist_Int_CentreOfGravity  { get; set; }
+        public int     Isovist_Int_NumberOfVertices { get; set; }
+        public double  Isovist_Int_DriftMagnitude   { get; set; }
+        public double  Isovist_Int_Occlusivity      { get; set; }
+        public double  Isovist_Int_Compactness      { get; set; }
 
 
 

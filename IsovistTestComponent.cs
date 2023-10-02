@@ -187,21 +187,25 @@ namespace IsovistTest {
             Double intDriftMagnitude = (testSU.Point3d - intGravityCentre).Length;
 
 
-            // Finally assign the spiral to the output parameter.
-            // DA.SetData(0, spiral);
+            // Finally assign the values to the properties.
 
-            testSU.Isovist_InteriorIsovist = interiorIsoVist;
-            testSU.Isovist_IntIsovistArea  = interiorIsovistArea;
-            testSU.Isovist_ExteriorIsovist = exteriorIsoVist;
-            testSU.Isovist_ExtIsovistArea  = exteriorIsovistArea;
-            testSU.Isovist_InteriorCentreOfGravity = intGravityCentre;
-            testSU.Isovist_InteriorNumberOfVertices = vertices.Count;
-            testSU.Isovist_ExteriorCompactness = extCompactness;
-            testSU.Isovist_InteriorCompactness =
-            testSU.Isovist_InteriorDriftMagnitude = intDriftMagnitude;
+            testSU.Isovist_Ext_Isovist = exteriorIsoVist;
+            testSU.Isovist_Ext_Area  = exteriorIsovistArea;
+            testSU.Isovist_Ext_Perimeter = exteriorPerimeter.GetLength();
+            testSU.Isovist_Ext_Compactness = extCompactness;
+            testSU.Isovist_Int_Isovist = interiorIsoVist;
+            testSU.Isovist_Int_Area = interiorIsovistArea;
+            testSU.Isovist_Int_Perimeter = interiorPerimeter.GetLength();
+            testSU.Isovist_Int_CentreOfGravity = intGravityCentre;
+            testSU.Isovist_Int_NumberOfVertices = vertices.Count;
+            testSU.Isovist_Int_Compactness = intCompactness;
+            testSU.Isovist_Int_DriftMagnitude = intDriftMagnitude;
 
             List<string> data = AggregateProperties(testSU);
 
+
+            // Finally assign the values to the output parameter.
+            // DA.SetData(0, spiral);
 
             DA.SetDataList(0, endPoints);
             DA.SetDataList(1, interiorIntersectionPoints);
@@ -361,7 +365,7 @@ namespace IsovistTest {
         ///.........................COMPUTE COMPACTNESS.....................................
 
         public Double ComputeCopmactness(double perimeter, double area) {
-            double compactness = Math.Pow(perimeter, 2) / (area * Math.PI * 4);
+            double compactness = (area * Math.PI * 4) / Math.Pow(perimeter, 2) ;
             return compactness;
         }
 
