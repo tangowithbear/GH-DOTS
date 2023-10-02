@@ -183,6 +183,7 @@ namespace IsovistTest {
 
       
             Double extCompactness = ComputeCopmactness(exteriorPerimeter.GetLength(), exteriorIsovistArea);
+            Double intCompactness = ComputeCopmactness(interiorPerimeter.GetLength(), interiorIsovistArea);
             Double intDriftMagnitude = (testSU.Point3d - intGravityCentre).Length;
 
 
@@ -196,6 +197,7 @@ namespace IsovistTest {
             testSU.Isovist_InteriorCentreOfGravity = intGravityCentre;
             testSU.Isovist_InteriorNumberOfVertices = vertices.Count;
             testSU.Isovist_ExteriorCompactness = extCompactness;
+            testSU.Isovist_InteriorCompactness =
             testSU.Isovist_InteriorDriftMagnitude = intDriftMagnitude;
 
             List<string> data = AggregateProperties(testSU);
