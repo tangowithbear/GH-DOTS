@@ -35,9 +35,11 @@ namespace IsovistTest {
         public Brep[]  Isovist_InteriorIsovist          { get; set; }
         public double  Isovist_IntIsovistArea           { get; set; }
         public Point3d Isovist_InteriorCentreOfGravity  { get; set; }
+        public int     Isovist_InteriorNumberOfVertices { get; set; }
         public double  Isovist_InteriorDriftMagnitude   { get; set; }
         public double  Isovist_InteriorOcclusivity      { get; set; }
         public double  Isovist_InteriorCompactness      { get; set; }
+
 
 
         ///public string MainViewDirection;

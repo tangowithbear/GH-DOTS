@@ -194,8 +194,9 @@ namespace IsovistTest {
             testSU.Isovist_ExteriorIsovist = exteriorIsoVist;
             testSU.Isovist_ExtIsovistArea  = exteriorIsovistArea;
             testSU.Isovist_InteriorCentreOfGravity = intGravityCentre;
-            testSU.Isovist_InteriorDriftMagnitude =
+            testSU.Isovist_InteriorNumberOfVertices = vertices.Count;
             testSU.Isovist_ExteriorCompactness = extCompactness;
+            testSU.Isovist_InteriorDriftMagnitude = intDriftMagnitude;
 
             List<string> data = AggregateProperties(testSU);
 
