@@ -188,12 +188,14 @@ namespace IsovistTest {
 
 
             // Finally assign the values to the properties.
-
-            testSU.Isovist_Ext_Isovist = exteriorIsoVist;
+            testSU.Isovist_Radius = radius;
+            //testSU.Isovist_Ext_Isovist = exteriorIsoVist;
+            testSU.Isovist_Ext_PerimeterCurve = exteriorPerimeter;
             testSU.Isovist_Ext_Area  = exteriorIsovistArea;
             testSU.Isovist_Ext_Perimeter = exteriorPerimeter.GetLength();
             testSU.Isovist_Ext_Compactness = extCompactness;
-            testSU.Isovist_Int_Isovist = interiorIsoVist;
+            //testSU.Isovist_Int_Isovist = interiorIsoVist;
+            testSU.Isovist_Int_PerimeterCurve = interiorPerimeter;
             testSU.Isovist_Int_Area = interiorIsovistArea;
             testSU.Isovist_Int_Perimeter = interiorPerimeter.GetLength();
             testSU.Isovist_Int_CentreOfGravity = intGravityCentre;
@@ -303,8 +305,6 @@ namespace IsovistTest {
             }     
             return intIntersectionPoints;
         }
-
-
 
 
 

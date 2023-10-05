@@ -27,25 +27,38 @@ namespace IsovistTest {
 
 
 
-        public Brep[]  Isovist_Ext_Isovist          { get; set; }
-        public double  Isovist_Ext_Area             { get; set; }
-        public double  Isovist_Ext_Perimeter        { get; set; }
-        public double  Isovist_Ext_Compactness      { get; set; }
-        public double  Isovist_Ext_Occlusivity      { get; set; }
+       // public Brep[]  Isovist_Ext_Isovist               { get; set; }
+        public int     Isovist_Radius                    { get; set; }
+        public Curve   Isovist_Ext_PerimeterCurve        { get; set; }
+        public double  Isovist_Ext_Area                  { get; set; }
+        public double  Isovist_Ext_Perimeter             { get; set; }
+        public double  Isovist_Ext_Compactness           { get; set; }
+        public double  Isovist_Ext_Occlusivity           { get; set; }
 
-        public Brep[]  Isovist_Int_Isovist          { get; set; }
-        public double  Isovist_Int_Area             { get; set; }
-        public double  Isovist_Int_Perimeter        { get; set; }
-        public Point3d Isovist_Int_CentreOfGravity  { get; set; }
-        public int     Isovist_Int_NumberOfVertices { get; set; }
-        public double  Isovist_Int_DriftMagnitude   { get; set; }
-        public double  Isovist_Int_Occlusivity      { get; set; }
-        public double  Isovist_Int_Compactness      { get; set; }
+       // public Brep[]  Isovist_Int_Isovist               { get; set; }
+        public Curve   Isovist_Int_PerimeterCurve        { get; set; }
+        public Point3d Isovist_Int_CentreOfGravity       { get; set; }
+        public double  Isovist_Int_Area                  { get; set; }
+        public double  Isovist_Int_Perimeter             { get; set; }
+        public double  Isovist_Int_MajorAxisLength       { get; set; }
+        public double  Isovist_Int_MajorAxisOrientation  { get; set; }
+        public double  Isovist_Int_MinorAxisLength       { get; set; }
+        public double  Isovist_Int_MinorAxisOrientation  { get; set; }
+        public int     Isovist_Int_NumberOfVertices      { get; set; }
+        public double  Isovist_Int_DriftMagnitude        { get; set; }
+        public double  Isovist_Int_Occlusivity           { get; set; }
+        public double  Isovist_Int_Compactness           { get; set; }
+
+        public int Orientation_Ext_EastScore             { get; set; }
+        public int Orientation_Ext_NordEastScore         { get; set; }
+        public int Orientation_Ext_NordScore             { get; set; }
+        public int Orientation_Ext_NordWestScore         { get; set; }
+        public int Orientation_Ext_WestScore             { get; set; }
+        public int Orientation_Ext_SouthWestScore        { get; set; }
+        public int Orientation_Ext_SouthScore            { get; set; }
+        public int Orientation_Ext_SouthEastScore        { get; set; }
 
 
-
-        ///public string MainViewDirection;
-        ///public double Max Radius;
         ///public double Skewnes;
 
         /// ...........................VISIBILITY...........................
