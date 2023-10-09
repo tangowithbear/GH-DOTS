@@ -22,7 +22,7 @@ namespace IsovistTest {
         public Conteiner()
           : base("Container", "Container",
             "Collect data",
-            "IndoorSpaceManager", "Map") {
+            "IndoorSpaceManager", "Query") {
         }
 
         /// <summary>

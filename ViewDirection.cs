@@ -170,14 +170,14 @@ namespace IsovistTest {
                                         out int east, out int nordEast, out int nord, out int nordWest, 
                                         out int west, out int southWest, out int south, out int southEast) {
             perimeterPoints = new List<Point3d>();
-            east      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 338, 383, out List<Point3d> eastPerimeterPoints));      perimeterPoints.AddRange(eastPerimeterPoints);  
-            nordEast  = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 24, 68, out List<Point3d> nordEastPerimeterPoints));    perimeterPoints.AddRange(nordEastPerimeterPoints);
-            nord      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 69, 113, out List<Point3d> nordPerimeterPoints));       perimeterPoints.AddRange(nordPerimeterPoints);
-            nordWest  = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 114, 158, out List<Point3d> nordWestPerimeterPoints));  perimeterPoints.AddRange(nordWestPerimeterPoints);
-            west      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 159, 203, out List<Point3d> westPerimeterPoints));      perimeterPoints.AddRange(westPerimeterPoints);
-            southWest = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 204, 248, out List<Point3d> southWestPerimeterPoints)); perimeterPoints.AddRange(southWestPerimeterPoints);
-            south     = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 249, 294, out List<Point3d> southPerimeterPoints));     perimeterPoints.AddRange(southPerimeterPoints);
-            southEast = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 295, 338, out List<Point3d> southEastPerimeterPoints)); perimeterPoints.AddRange(southEastPerimeterPoints);
+            east      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 338, 383,    out List<Point3d> eastPerimeterPoints));      perimeterPoints.AddRange(eastPerimeterPoints);  
+            nordEast  = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 24, 68,      out List<Point3d> nordEastPerimeterPoints));  perimeterPoints.AddRange(nordEastPerimeterPoints);
+            nord      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 69, 113,     out List<Point3d> nordPerimeterPoints));      perimeterPoints.AddRange(nordPerimeterPoints);
+            nordWest  = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 114, 158,    out List<Point3d> nordWestPerimeterPoints));  perimeterPoints.AddRange(nordWestPerimeterPoints);
+            west      = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 159, 203,    out List<Point3d> westPerimeterPoints));      perimeterPoints.AddRange(westPerimeterPoints);
+            southWest = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 204, 248,    out List<Point3d> southWestPerimeterPoints)); perimeterPoints.AddRange(southWestPerimeterPoints);
+            south     = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 249, 294,    out List<Point3d> southPerimeterPoints));     perimeterPoints.AddRange(southPerimeterPoints);
+            southEast = Convert.ToInt32(ComputeScore(testPoint, endPoints, perimeterCurve, 295, 338,    out List<Point3d> southEastPerimeterPoints)); perimeterPoints.AddRange(southEastPerimeterPoints);
             return true;
         }
 
@@ -186,7 +186,7 @@ namespace IsovistTest {
         public double ComputeScore(Point3d testPoint, List<Point3d> endPoints, Curve perimeterCurve, int startAngle, int endAngle, out List<Point3d> localPerimeterPoints) {
             double score = 0;
             localPerimeterPoints = new List<Point3d>();
-            for (int i = 0; i < (endAngle - startAngle); i++) {
+            for (int i = startAngle; i < (endAngle - startAngle); i++) {
                 LineCurve ray = new LineCurve (testPoint, endPoints[i%360]);
                 ray.ToNurbsCurve();
                 ray.ClosestPoints(perimeterCurve, out Point3d pointOnRay, out Point3d poinOnCurve);
@@ -236,7 +236,7 @@ namespace IsovistTest {
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-       // protected override System.Drawing.Bitmap Icon => Properties.Resources.visibility;
+        protected override System.Drawing.Bitmap Icon => null;
 
 
 

@@ -15,22 +15,17 @@ using System.Reflection;
 
 namespace IsovistTest {
     public class FilterComponent : GH_Component {
-        /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
         /// Category represents the Tab in which the component will appear, 
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
-        /// </summary>
         public FilterComponent()
           : base("Filter", "Filter",
             "Filter Spatial Units",
             "IndoorSpaceManager", "Query") {
         }
-
-        /// <summary>
         /// Registers all the input parameters for this component.
-        /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             // Use the pManager object to register your input parameters.
             // You can often supply default values when creating parameters.
@@ -43,11 +38,13 @@ namespace IsovistTest {
             pManager.AddTextParameter("Value", "V", "Property Value Option", GH_ParamAccess.item); 
             pManager.AddIntegerParameter("Integer", "I", "input int", GH_ParamAccess.item);
 
-            Param_Integer param = pManager[2] as Param_Integer;
+            //Param_Integer param = pManager[3] as Param_Integer;
 
-            param.AddNamedValue("option_1", 0);
-            param.AddNamedValue("option_2", 1);
-            param.AddNamedValue("option_3", 2);
+            var test = (Param_Integer)pManager[3];
+
+            test.AddNamedValue("option_1", 0);
+            test.AddNamedValue("option_2", 1);
+            test.AddNamedValue("option_3", 2);
 
 
             // If you want to change properties of certain parameters, 
@@ -181,7 +178,7 @@ namespace IsovistTest {
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-       // protected override System.Drawing.Bitmap Icon => Properties.Resources.visibility;
+        protected override System.Drawing.Bitmap Icon => null;
 
 
 
@@ -190,7 +187,7 @@ namespace IsovistTest {
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("145C11C4-F9AD-4A7D-A912-776EF1D1934C");
+        public override Guid ComponentGuid => new Guid("124F8D8D-10CF-436D-AAB4-9262ED44D584");
 
     }
 }
