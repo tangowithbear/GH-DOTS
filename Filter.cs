@@ -4,6 +4,7 @@ using Grasshopper.Kernel.Components;
 using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Types;
 using Rhino.Collections;
+using Rhino.Commands;
 using Rhino.Display;
 using Rhino.Geometry;
 using Rhino.Input.Custom;
@@ -34,21 +35,28 @@ namespace IsovistTest {
             // to import lists or trees of values, modify the ParamAccess flag.
 
 
-            pManager.AddGenericParameter("Spatial Units", "SUs", "A list of Spatial Units to test ", GH_ParamAccess.list);
-            pManager.AddIntegerParameter("Name Predicate", "NP", "Property name condition", GH_ParamAccess.item);
-            pManager.AddTextParameter("Name",  "N", "Property Name subject as text",  GH_ParamAccess.item);
-            pManager.AddIntegerParameter("Value Predicate", "VP", "Propery value contidion", GH_ParamAccess.item);
-            pManager.AddTextParameter("Value", "V", "Value as number or text", GH_ParamAccess.item); 
+            pManager.AddGenericParameter("Spatial Units",  "SUs",  "A list of Spatial Units to test ",          GH_ParamAccess.list);
+            pManager.AddIntegerParameter("Name Predicate", "NP",   "Property name condition, default 'is' ",    GH_ParamAccess.item);
+            pManager.AddTextParameter   ("Name Subject",   "N",    "Property Name subject as text",             GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Value Predicate","VP",   "Propery value contidion, default 'equals'", GH_ParamAccess.item);
+            pManager.AddTextParameter   ("Value Subject",  "V",    "Value as number or text, default 0",        GH_ParamAccess.item); 
 
 
             //Param_Integer param = pManager[3] as Param_Integer;
 
-            var test = (Param_Integer)pManager[1];
+            var namePredicate = (Param_Integer)pManager[1];
 
-            test.AddNamedValue("Name is", 0);
-            test.AddNamedValue("Name is not", 1);
-            test.AddNamedValue("Name containts", 2);
+            namePredicate.AddNamedValue("Name is", 0);
+            namePredicate.AddNamedValue("Name is not", 1);
+            namePredicate.AddNamedValue("Name containts", 2);
+            namePredicate.AddNamedValue("Name does not contain", 3);
 
+            var valuePredicate = (Param_Integer)pManager [3];
+
+            valuePredicate.AddNamedValue("equals", 0);
+            valuePredicate.AddNamedValue("not equals", 1);
+            valuePredicate.AddNamedValue("greater than or equal", 2);
+            valuePredicate.AddNamedValue("less than", 3);
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -88,9 +96,9 @@ namespace IsovistTest {
 
 
             List<SpatialUnit> allSUs = new List<SpatialUnit>();
-            int namePredicate   = -1;
+            int namePredicate   = 0;
             string nameSubject  = null;
-            var valuePredicate  = (dynamic)null;
+            int valuePredicate  = 0;
             var valueSubject    = (dynamic)null;
       
 
@@ -136,15 +144,8 @@ namespace IsovistTest {
 
             string testOutput = null;
 
-            if (namePredicate == -1) {
-                testOutput = "fail";
-            }else if (namePredicate == 0) {
-                testOutput = "is";
-            }else if (namePredicate == 1) {
-                testOutput = "is not";
-            }else { 
-                testOutput = "containts"; 
-            }
+
+          
 
 
             //object ob = null;
@@ -160,6 +161,9 @@ namespace IsovistTest {
             double percentage = 0;
             int number = 0;
 
+            List<string> targetProperties = DefineTargetPropertyName(allSUs, nameSubject, namePredicate);
+
+
             List<string> data = new List<string>();
             foreach ( SpatialUnit SU in allSUs) {
                 AggregateProperties(SU);
@@ -174,6 +178,48 @@ namespace IsovistTest {
             DA.SetDataList (5, data);
         }
 
+
+        public List<string> DefineTargetPropertyName (List<SpatialUnit> allSUs, string nameSubject, int namePredicate) {
+            List<string> targetProperties = new List<string>();
+            SpatialUnit testSU = allSUs[0];
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+
+            if (namePredicate == 0) { 
+                foreach (var property in props) {
+                    if (property.Name == nameSubject) {
+                        targetProperties.Add(property.Name);
+                    }
+                }
+            }
+
+            else if (namePredicate == 1) {
+                foreach (var property in props) {
+                    if (!property.Name.Contains(nameSubject)) {
+                        targetProperties.Add(property.Name);
+                    }
+                }
+            } 
+            
+            else if (namePredicate == 2) {
+                foreach (var property in props) {
+                    if (property.Name.Contains(nameSubject)) {
+                        targetProperties.Add(property.Name);
+                    }
+                }
+            } 
+            
+            else if (namePredicate == 3) {
+                foreach (var property in props) {
+                    if (!property.Name.Contains(nameSubject)) {
+                        targetProperties.Add(property.Name);
+                    }
+                }
+            }
+
+            return targetProperties;
+        }
 
 
 
