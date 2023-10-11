@@ -2,6 +2,7 @@
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
 using Grasshopper.Kernel.Parameters;
+using Grasshopper.Kernel.Types;
 using Rhino.Collections;
 using Rhino.Display;
 using Rhino.Geometry;
@@ -34,17 +35,19 @@ namespace IsovistTest {
 
 
             pManager.AddGenericParameter("Spatial Units", "SUs", "A list of Spatial Units to test ", GH_ParamAccess.list);
-            pManager.AddTextParameter("Name",  "N", "Property Name Option",  GH_ParamAccess.item);
-            pManager.AddTextParameter("Value", "V", "Property Value Option", GH_ParamAccess.item); 
-            pManager.AddIntegerParameter("Integer", "I", "input int", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Name Predicate", "NP", "Property name condition", GH_ParamAccess.item);
+            pManager.AddTextParameter("Name",  "N", "Property Name subject as text",  GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Value Predicate", "VP", "Propery value contidion", GH_ParamAccess.item);
+            pManager.AddTextParameter("Value", "V", "Value as number or text", GH_ParamAccess.item); 
+
 
             //Param_Integer param = pManager[3] as Param_Integer;
 
-            var test = (Param_Integer)pManager[3];
+            var test = (Param_Integer)pManager[1];
 
-            test.AddNamedValue("option_1", 0);
-            test.AddNamedValue("option_2", 1);
-            test.AddNamedValue("option_3", 2);
+            test.AddNamedValue("Name is", 0);
+            test.AddNamedValue("Name is not", 1);
+            test.AddNamedValue("Name containts", 2);
 
 
             // If you want to change properties of certain parameters, 
@@ -64,8 +67,9 @@ namespace IsovistTest {
             pManager.AddPointParameter("Test point", "P", "Spatial unit test field of view area", GH_ParamAccess.item);
             pManager.AddNumberParameter("%", "%", "Percentage of tested spatial units that meets the filtering condition", GH_ParamAccess.item);
             pManager.AddNumberParameter("Number", "N", "Number of tested spatial units that meets the filtering condition", GH_ParamAccess.item);
+            pManager.AddTextParameter("test", "T", "test", GH_ParamAccess.item);
             pManager.AddTextParameter("Property Values", "V", "A list of values for the selected property for the tested spatial units that meets the filtering condition", GH_ParamAccess.list);
-
+ 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
@@ -83,59 +87,91 @@ namespace IsovistTest {
             // We'll start by declaring variables and assigning them starting values.
 
 
-            Point3d testPoint = Point3d.Unset;
-
-            //Curve interiorPerimeter = null;
-            //Curve exteriorPerimeter = null;
-
+            List<SpatialUnit> allSUs = new List<SpatialUnit>();
+            int namePredicate   = -1;
+            string nameSubject  = null;
+            var valuePredicate  = (dynamic)null;
+            var valueSubject    = (dynamic)null;
+      
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
 
-            //if (!DA.GetData(0, ref plane)) return;
+            //Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
+            //List<GH_ObjectWrapper> objs = new List<GH_ObjectWrapper>();
 
+            if (!DA.GetDataList<SpatialUnit>(0, allSUs)) return;
+            if (!DA.GetData(1, ref namePredicate)) return;
+            if (!DA.GetData(2, ref nameSubject)) return;
+            if (!DA.GetData(3, ref valuePredicate)) return;
+            if (!DA.GetData(4, ref valueSubject)) return;
 
-            Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
-
-            if (!DA.GetData(0, ref obj)) return;
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (obj == null) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Spatial Unit  is provided");
+            if (allSUs.Count <= 1) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
                 return;
             }
 
+            if (namePredicate == -1) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Name predicate is providate");
+                return;
+            }
 
-            SpatialUnit testSU = obj.Value as SpatialUnit;
+            /*SpatialUnit testSU = obj.Value as SpatialUnit;
 
             if (testSU == null) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Test point is not valid");
                 return;
+            }*/
+
+
+            List <Point3d> testPoints = new List<Point3d> ();
+            foreach ( SpatialUnit SU in allSUs) {
+                testPoints.Add(SU.Point3d);
             }
 
-            testPoint = testSU.Point3d;
+           
 
-            object ob = null;
-            DA.GetData(1, ref ob);
+            string testOutput = null;
 
-            var v = Params.Input[1].Sources[0];
-            string s = v.NickName;
+            if (namePredicate == -1) {
+                testOutput = "fail";
+            }else if (namePredicate == 0) {
+                testOutput = "is";
+            }else if (namePredicate == 1) {
+                testOutput = "is not";
+            }else { 
+                testOutput = "containts"; 
+            }
 
+
+            //object ob = null;
+            //DA.GetData(1, ref ob);
+
+            //var nameSubject = Params.Input[1].Sources[0];
+            // string nick = nameSubject.NickName;
 
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
             // The actual functionality will be in a different method:
 
+
             double percentage = 0;
             int number = 0;
 
-            List<string> data = AggregateProperties(testSU);
+            List<string> data = new List<string>();
+            foreach ( SpatialUnit SU in allSUs) {
+                AggregateProperties(SU);
+            }
 
-            DA.SetData(0, testSU);
-            DA.SetData(1, testPoint);
+
+            DA.SetDataList(0, allSUs);
+            DA.SetDataList(1, testPoints);
             DA.SetData(2, percentage);
             DA.SetData(3, number);
-            DA.SetDataList(4, data);
+            DA.SetData(4, testOutput);
+            DA.SetDataList (5, data);
         }
 
 
