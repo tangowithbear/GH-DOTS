@@ -59,6 +59,7 @@ namespace IsovistTest {
             valuePredicate.AddNamedValue("greater than or equal", 2);
             valuePredicate.AddNamedValue("less than", 3);
 
+
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
             //pManager[0].Optional = true;
@@ -173,6 +174,10 @@ namespace IsovistTest {
 
             List<string> targetProperties = DefineTargetPropertyName(allSUs, nameSubject, namePredicate);
 
+            foreach (string targetProperty in targetProperties) {
+
+
+            }
 
             List<string> data = new List<string>();
 
@@ -252,17 +257,21 @@ namespace IsovistTest {
                     if ((valuePredicate == 0) && ((double)propertyValue == valueSubjectDouble)) filteredSU.Add(SU);
                     if ((valuePredicate == 1) && ((double)propertyValue != valueSubjectDouble)) filteredSU.Add(SU);
                     if ((valuePredicate == 2) && ((double)propertyValue >= valueSubjectDouble)) filteredSU.Add(SU);
-
+                    if ((valuePredicate == 3) && ((double)propertyValue < valueSubjectDouble)) filteredSU.Add(SU);
                 }
+            } 
+            
+            else if (valueSubject is string) {
 
+                string valueSubjectString = (string)valueSubject;
 
+                foreach (SpatialUnit SU in allSUs) {
+                    var propertyInfo = SU.GetType().GetProperty(targetProperty);
+                    object propertyValue = propertyInfo.GetValue(SU);
 
-
-
+                    if ((valuePredicate == 0) && ((string)propertyValue == valueSubjectString)) filteredSU.Add(SU);
+                }
             }
-
-
-
             return filteredSU;
         }
 
