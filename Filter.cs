@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace IsovistTest {
     public class FilterComponent : GH_Component {
@@ -75,7 +76,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("Test point", "P", "Spatial unit test field of view area", GH_ParamAccess.item);
             pManager.AddNumberParameter("%", "%", "Percentage of tested spatial units that meets the filtering condition", GH_ParamAccess.item);
             pManager.AddNumberParameter("Number", "N", "Number of tested spatial units that meets the filtering condition", GH_ParamAccess.item);
-            pManager.AddTextParameter("test", "T", "test", GH_ParamAccess.item);
+            pManager.AddTextParameter("test", "T", "test", GH_ParamAccess.list);
             pManager.AddTextParameter("Property Values", "V", "A list of values for the selected property for the tested spatial units that meets the filtering condition", GH_ParamAccess.list);
  
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
@@ -99,8 +100,17 @@ namespace IsovistTest {
             int namePredicate   = 0;
             string nameSubject  = null;
             int valuePredicate  = 0;
-            var valueSubject    = (dynamic)null;
-      
+            object valueSubject = null;
+
+            //object tiutout = null;
+            //if (tiutout is Point3d point3d) {
+            //}
+
+
+            //else {
+            //    List<object> tiutoutList = null;
+            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //}     
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -165,8 +175,9 @@ namespace IsovistTest {
 
 
             List<string> data = new List<string>();
+
             foreach ( SpatialUnit SU in allSUs) {
-                AggregateProperties(SU);
+                data = AggregateProperties(SU);
             }
 
 
@@ -174,8 +185,8 @@ namespace IsovistTest {
             DA.SetDataList(1, testPoints);
             DA.SetData(2, percentage);
             DA.SetData(3, number);
-            DA.SetData(4, testOutput);
-            DA.SetDataList (5, data);
+            DA.SetDataList(4, targetProperties);
+            DA.SetDataList(5, data);
         }
 
 
@@ -189,15 +200,17 @@ namespace IsovistTest {
             if (namePredicate == 0) { 
                 foreach (var property in props) {
                     if (property.Name == nameSubject) {
-                        targetProperties.Add(property.Name);
+                        string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                        targetProperties.Add(propString);
                     }
                 }
             }
 
             else if (namePredicate == 1) {
                 foreach (var property in props) {
-                    if (!property.Name.Contains(nameSubject)) {
-                        targetProperties.Add(property.Name);
+                    if (!(property.Name == nameSubject)) {
+                        string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                        targetProperties.Add(propString);
                     }
                 }
             } 
@@ -205,7 +218,8 @@ namespace IsovistTest {
             else if (namePredicate == 2) {
                 foreach (var property in props) {
                     if (property.Name.Contains(nameSubject)) {
-                        targetProperties.Add(property.Name);
+                        string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                        targetProperties.Add(propString);
                     }
                 }
             } 
@@ -213,13 +227,45 @@ namespace IsovistTest {
             else if (namePredicate == 3) {
                 foreach (var property in props) {
                     if (!property.Name.Contains(nameSubject)) {
-                        targetProperties.Add(property.Name);
+                        string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                        targetProperties.Add(propString);
                     }
                 }
             }
 
             return targetProperties;
         }
+
+
+        public List<SpatialUnit> FilterSpatialUnits(List<SpatialUnit> allSUs, string targetProperty, object valueSubject, int valuePredicate) {
+           
+            List<SpatialUnit> filteredSU = new List<SpatialUnit>();
+
+            if ((valueSubject is int) || (valueSubject is double)) {
+
+                double valueSubjectDouble = (double)valueSubject;
+
+                foreach (SpatialUnit SU in allSUs) {
+                    var propertyInfo = SU.GetType().GetProperty(targetProperty);
+                    object propertyValue = propertyInfo.GetValue(SU);
+
+                    if ((valuePredicate == 0) && ((double)propertyValue == valueSubjectDouble)) filteredSU.Add(SU);
+                    if ((valuePredicate == 1) && ((double)propertyValue != valueSubjectDouble)) filteredSU.Add(SU);
+                    if ((valuePredicate == 2) && ((double)propertyValue >= valueSubjectDouble)) filteredSU.Add(SU);
+
+                }
+
+
+
+
+
+            }
+
+
+
+            return filteredSU;
+        }
+
 
 
 
@@ -233,11 +279,7 @@ namespace IsovistTest {
 
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
-
-                if (propString.Contains("h") || propString.Contains("SUID")) {
-
-                    result.Add(propString);
-                }
+                result.Add(propString);
             }
 
             return result;
