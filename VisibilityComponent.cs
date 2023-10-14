@@ -171,9 +171,9 @@ namespace IsovistTest {
             double percentage = CalculatePercentage(visibility);
             bool isThresholdPassed = IsThresholdPassed(threshold, percentage);
 
-            testSU.Visibility_Threshold = threshold;
+            //testSU.Visibility_Threshold = threshold;
             testSU.Visibility_Percentage = percentage;
-            testSU.Visibility_Visibility = isThresholdPassed;
+            //testSU.Visibility_Visibility = isThresholdPassed;
 
             List<string> data = AggregateProperties(testSU);
 
