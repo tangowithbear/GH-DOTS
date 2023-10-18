@@ -39,7 +39,7 @@ namespace IsovistTest {
             pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Object to test", "B", "Geometry to check the view acces", GH_ParamAccess.item);
+            pManager.AddGeometryParameter("Landmark", "L", "Geometry to check the view acces", GH_ParamAccess.item);
 
 
             // If you want to change properties of certain parameters, 
@@ -55,10 +55,10 @@ namespace IsovistTest {
             // Output parameters do not have default values, but they too must have the correct access type.
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
-            pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
+            pManager.AddPointParameter("Landmark Sensor Points", "SP", "End points of the rays", GH_ParamAccess.item);
             pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
             pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
-            pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
+            pManager.AddBooleanParameter("Results", "R", "True of Target point is visible, otherwise false ", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item );
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
