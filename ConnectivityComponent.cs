@@ -195,7 +195,7 @@ namespace IsovistTest {
 
             testSU.Connectivity_Percentage = percentage;
             testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
-            testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
+            //testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
             testSU.Connectivity_VisibleUnits = visibleSUs;
             testSU.Connectivity_ThroughVision = throughVision;
 
@@ -299,10 +299,24 @@ namespace IsovistTest {
 
             Type t = testSU.GetType();
             PropertyInfo[] props = t.GetProperties();
+            List<string> listSUID = new List<string>();
             foreach (var property in props) {
 
+                string propertyValue;
+
+                if (property.Name == "Connectivity_VisibleUnits") {
+
+                    foreach (SpatialUnit SU in testSU.Connectivity_VisibleUnits) {
+                        listSUID.Add(SU.SUID);                  
+                    }
+                    propertyValue = string.Join(", ", listSUID);
+                }
+
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
-                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                else  propertyValue = $"{property.GetValue(testSU)}";
+
+                string propString = $"{property.Name} : {propertyValue} ";
 
                 if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
 
