@@ -63,7 +63,7 @@ namespace IsovistTest {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             //pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
-            pManager.AddPointParameter("Static intersection Points", "SIP", "Intersections points with static obstacles", GH_ParamAccess.list);
+            pManager.AddPointParameter("Intersection Points", "IP", "Intersections points with static obstacles", GH_ParamAccess.list);
             //pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
             //pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
