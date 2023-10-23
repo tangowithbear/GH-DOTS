@@ -72,7 +72,6 @@ namespace IsovistTest {
 
         public double               Connectivity_Percentage         { get; set; }
         public int                  Connectivity_NumberOfVisibleSUs { get; set; }
-        public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
         public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }
         public List<SpatialUnit>    Connectivity_FarthestVisibleSUs { get; set; }
         public int                  Connectivity_ThroughVision      { get; set; }

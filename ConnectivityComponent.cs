@@ -299,10 +299,10 @@ namespace IsovistTest {
 
             for (int j = 0; j < visiblePts.Count; j++) {
                 for (int i = j + 1; i < visiblePts.Count; i++) {
-                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);
+                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);   
 
                     foreach (Brep obstacle in obstacles) {
-                        var obstacleIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);
+                        var obstacleIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
                         if (brepIntersectPoints1.Count() == 0) {
                             var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
                             if (brepIntersectPoints.Count() > 1) {
