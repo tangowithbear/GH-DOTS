@@ -192,10 +192,11 @@ namespace IsovistTest {
             double percentage = CalculatePercentage(visibleSUs, allSUs);
             int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles);
 
+            List<SpatialUnit> farthestVisibleSUs = CalculateFarthestVisibleSUs(testSU, visibleSUs);
 
             testSU.Connectivity_Percentage = percentage;
             testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
-            //testSU.Connectivity_VisibleTestPoints = visibleSUTestPoints;
+            testSU.Connectivity_FarthestVisibleSUs = farthestVisibleSUs;
             testSU.Connectivity_VisibleUnits = visibleSUs;
             testSU.Connectivity_ThroughVision = throughVision;
 
@@ -254,6 +255,30 @@ namespace IsovistTest {
             return visibleSUs;
         }
 
+        public static List<SpatialUnit> CalculateFarthestVisibleSUs (SpatialUnit testSU, HashSet<SpatialUnit> visibleSUS) {
+            
+            List<SpatialUnit> result = new List<SpatialUnit>();
+            SpatialUnit farthestSU = null;
+            Double maxDistanceSquared = 0.00;
+
+            foreach (SpatialUnit SU in visibleSUS) { 
+                if (testSU.Point3d.DistanceToSquared(SU.Point3d) > maxDistanceSquared) {
+                    maxDistanceSquared = testSU.Point3d.DistanceToSquared(SU.Point3d);
+                    farthestSU = SU;   
+                }
+            }
+
+            foreach (SpatialUnit SU in visibleSUS) {
+                if (testSU.Point3d.DistanceToSquared(SU.Point3d) == maxDistanceSquared) {
+                    result.Add(SU);
+                }
+            }
+
+            return result;
+        }
+
+
+
         public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
             int trueCount = visibleSUs.Count + 1;
             int totalCount = allSUs.Count;
@@ -299,16 +324,15 @@ namespace IsovistTest {
 
             Type t = testSU.GetType();
             PropertyInfo[] props = t.GetProperties();
-            List<string> listSUID = new List<string>();
+            List<string> listSUIDs = new List<string>();
             foreach (var property in props) {
 
                 string propertyValue;
 
-                if (property.Name == "Connectivity_VisibleUnits") {
+                if ((property.PropertyType == typeof(HashSet<SpatialUnit>)) || (property.PropertyType == typeof(List<SpatialUnit>)))  {
 
-                    foreach (SpatialUnit SU in testSU.Connectivity_VisibleUnits) {
-                        listSUID.Add(SU.SUID);                  
-                    }
+                    var propertyValueList = (IEnumerable<SpatialUnit>)property.GetValue(testSU);
+                    var listSUID = propertyValueList.Select(SU => SU.SUID);
                     propertyValue = string.Join(", ", listSUID);
                 }
 

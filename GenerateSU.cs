@@ -6,6 +6,7 @@ using Rhino.Geometry;
 using Rhino.UI.ObjectProperties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -36,6 +37,7 @@ namespace IsovistTest {
 
 
             pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
+            pManager.AddPointParameter("All Points", "PTs", "A list of all Points", GH_ParamAccess.list);
 
 
             // If you want to change properties of certain parameters, 
@@ -73,6 +75,7 @@ namespace IsovistTest {
 
 
             Point3d testPoint = Point3d.Unset;
+            List<Point3d> allPts = new List<Point3d>();
             List<Point3d> allTestPoints = new List<Point3d>();
 
 
@@ -84,7 +87,9 @@ namespace IsovistTest {
             //if (!DA.GetData(2, ref radius1)) return;
             //if (!DA.GetData(3, ref turns)) return;
 
-            if (!DA.GetData(0, ref testPoint)) return;
+
+            if (!DA.GetData(0, ref testPoint)) return; 
+            if (!DA.GetDataList<Point3d>(1, allPts)) return;
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
@@ -92,6 +97,11 @@ namespace IsovistTest {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
+            if (allPts.Count <= 1) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
+                return;
+            }
+
 
 
             //object tiutout = null;
@@ -109,7 +119,10 @@ namespace IsovistTest {
             // The actual functionality will be in a different method:
 
             SpatialUnit spatialUnit = new SpatialUnit(testPoint);
+            double area = Area(allPts);
+            spatialUnit.Area = area;
             List<string> data = AggregateProperties(spatialUnit);
+
 
             DA.SetData(0, spatialUnit.Point3d);
             DA.SetData(1, spatialUnit.SUID);
@@ -119,8 +132,26 @@ namespace IsovistTest {
         }
 
 
+        /// ...............................GET A DISTANCE BETTWEEN UNITS.................................
+
+
+        public double Area(List<Point3d> allPts) {
+
+            Double minDistanceSquared = allPts[0].DistanceToSquared(allPts[1]);
+
+            for (int i = 2; i < allPts.Count; i++) {
+                if (allPts[0].DistanceToSquared(allPts[i]) < minDistanceSquared)  {
+                    minDistanceSquared = allPts[0].DistanceToSquared(allPts[i]);
+
+                }
+            }
+            return minDistanceSquared;
+        }
+
+
+
         /// ...............................MAKE A PROPERTY/VALUE LIST.................................
- 
+
         public List<string> AggregateProperties (SpatialUnit testSU) {
 
             List<string> result = new List<string>();

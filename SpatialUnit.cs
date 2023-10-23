@@ -10,9 +10,9 @@ using System.Net;
 namespace IsovistTest {
     public class SpatialUnit {
 
-        public string SUID     { get; set; }
-        public Point3d Point3d { get; set; }
-        public double Area { get; set; }
+        public string SUID      { get; set; }
+        public Point3d Point3d  { get; set; }
+        public double Area      { get; set; }
 
         /// public double Height { get; set; }
         ///public int Level { get; set; }
@@ -72,8 +72,9 @@ namespace IsovistTest {
 
         public double               Connectivity_Percentage         { get; set; }
         public int                  Connectivity_NumberOfVisibleSUs { get; set; }
-        //public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
+        public List<Point3d>        Connectivity_VisibleTestPoints  { get; set; }
         public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }
+        public List<SpatialUnit>    Connectivity_FarthestVisibleSUs { get; set; }
         public int                  Connectivity_ThroughVision      { get; set; }
 
         /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
@@ -85,8 +86,6 @@ namespace IsovistTest {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
-            this.Area = 1.00;
-
         }
     }
 }
