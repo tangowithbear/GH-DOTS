@@ -12,7 +12,7 @@ using System.Net;
 using System.Reflection;
 
 namespace IsovistTest {
-    public class IsovistTestComponent : GH_Component {
+    public class IsovistComponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -20,8 +20,8 @@ namespace IsovistTest {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public IsovistTestComponent()
-          : base("IsovistTest", "IsoVist",
+        public IsovistComponent()
+          : base("Isovist", "IsoVist",
             "Construct an Isovist and evaluate data",
             "IndoorSpaceManager", "Vision") {
         }
@@ -44,6 +44,7 @@ namespace IsovistTest {
             pManager.AddIntegerParameter("View resolution", "VR", "View resolution, 1 for 360, 2 for 720", GH_ParamAccess.item, 1);
             pManager.AddIntegerParameter("radius", "R", "Lenght of the Ray", GH_ParamAccess.item, 1000);
             pManager.AddGeometryParameter("Interieor obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Facade Glazing", "FG", "Facade glazing", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Exterior obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
 
 
@@ -96,7 +97,8 @@ namespace IsovistTest {
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
             int resolution = 1;
             int radius = 1000;
-            List<GeometryBase> interiorObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
+            List<GeometryBase> interiorObstacles = new List<GeometryBase>();
+            List<GeometryBase> glazing = new List<GeometryBase>();
             List<GeometryBase> exteriorObstacles = new List<GeometryBase>();
 
 
@@ -112,7 +114,8 @@ namespace IsovistTest {
             if (!DA.GetData(1, ref resolution)) return;
             if (!DA.GetData(2, ref radius)) return;
             if (!DA.GetDataList<GeometryBase>(3, interiorObstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(4, exteriorObstacles)) return;
+            if (!DA.GetDataList<GeometryBase>(4, glazing)) return;
+            if (!DA.GetDataList<GeometryBase>(5, exteriorObstacles)) return;
  
 
 

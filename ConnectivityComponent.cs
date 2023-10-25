@@ -190,7 +190,7 @@ namespace IsovistTest {
                 visibleSUTestPoints.Add(SU.Point3d);
             }
             double percentage = CalculatePercentage(visibleSUs, allSUs);
-            int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles);
+            int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles) / 2;
 
             List<SpatialUnit> farthestVisibleSUs = CalculateFarthestVisibleSUs(testSU, visibleSUs);
 
