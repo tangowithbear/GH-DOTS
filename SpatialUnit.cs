@@ -41,9 +41,10 @@ namespace IsovistTest {
         public double  Isovist_Int_Area                  { get; set; }
         public double  Isovist_Int_Perimeter             { get; set; }
         public int     Isovist_Int_NumberOfVertices      { get; set; }
+        public int     Isovist_Int_DriftDirection        { get; set; }
         public double  Isovist_Int_DriftMagnitude        { get; set; }
         public double  Isovist_Int_Compactness           { get; set; }
-        public double   Isovist_Int_Occlusivity          { get; set; }
+        public double  Isovist_Int_Occlusivity           { get; set; }
 
         public double Isovist_Int_MajorAxisLength { get; set; }
         public double Isovist_Int_MajorAxisOrientation { get; set; }

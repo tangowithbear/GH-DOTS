@@ -187,7 +187,8 @@ namespace IsovistTest {
       
             Double extCompactness = ComputeCopmactness(exteriorPerimeter.GetLength(), exteriorIsovistArea);
             Double intCompactness = ComputeCopmactness(interiorPerimeter.GetLength(), interiorIsovistArea);
-            Double intDriftMagnitude = (testSU.Point3d - intGravityCentre).Length;
+
+            Vector3d drift = IsovistDrift(testSU, intGravityCentre, out double driftMagnitude, out int driftAngle);
 
 
             // Finally assign the values to the properties.
@@ -204,7 +205,8 @@ namespace IsovistTest {
             testSU.Isovist_Int_CentreOfGravity = intGravityCentre;
             testSU.Isovist_Int_NumberOfVertices = vertices.Count;
             testSU.Isovist_Int_Compactness = intCompactness;
-            testSU.Isovist_Int_DriftMagnitude = intDriftMagnitude;
+            testSU.Isovist_Int_DriftMagnitude = driftMagnitude;
+            testSU.Isovist_Int_DriftDirection = driftAngle;
 
             List<string> data = AggregateProperties(testSU);
 
@@ -440,9 +442,17 @@ namespace IsovistTest {
             return gravityPt;
         }
 
-        ///.........................COMPUTE .....................................
-        
+        ///.........................COMPUTE DRIFT.....................................
 
+        public Vector3d IsovistDrift(SpatialUnit testSU, Point3d gravityCntr, out double driftMagnitude, out int driftAngle) {
+            Vector3d drift = gravityCntr - testSU.Point3d;
+            driftMagnitude = drift.Length;
+            double driftAngleRadians = Vector3d.VectorAngle(Vector3d.XAxis, drift, Plane.WorldXY);
+            driftAngle = (int)((180.0 / Math.PI) * driftAngleRadians);
+            return drift;
+        }
+
+       
 
 
         /// <summary>

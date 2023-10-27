@@ -133,7 +133,7 @@ namespace IsovistTest {
             testSU.Orientation_Ext_NordScore =      nord;
             testSU.Orientation_Ext_NordWestScore =  nordWest;
             testSU.Orientation_Ext_WestScore =      west;
-            testSU.Orientation_Ext_WestScore =      southWest;
+            testSU.Orientation_Ext_SouthWestScore = southWest;
             testSU.Orientation_Ext_SouthScore =     south;
             testSU.Orientation_Ext_SouthEastScore = southEast;
 
@@ -186,7 +186,7 @@ namespace IsovistTest {
         public double ComputeScore(Point3d testPoint, List<Point3d> endPoints, Curve perimeterCurve, int startAngle, int endAngle, out List<Point3d> localPerimeterPoints) {
             double score = 0;
             localPerimeterPoints = new List<Point3d>();
-            for (int i = startAngle; i < (endAngle - startAngle); i++) {
+            for (int i = startAngle; i <= endAngle; i++) {
                 LineCurve ray = new LineCurve (testPoint, endPoints[i%360]);
                 ray.ToNurbsCurve();
                 ray.ClosestPoints(perimeterCurve, out Point3d pointOnRay, out Point3d poinOnCurve);
