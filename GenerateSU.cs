@@ -55,6 +55,7 @@ namespace IsovistTest {
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
             pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifire", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
+            pManager.AddPointParameter("Origin", "O", "Origin location", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
             
@@ -122,12 +123,13 @@ namespace IsovistTest {
             double area = Area(allPts);
             spatialUnit.Area = area;
             List<string> data = AggregateProperties(spatialUnit);
-
+            Point3d origin = FindOrigin(allPts);
 
             DA.SetData(0, spatialUnit.Point3d);
             DA.SetData(1, spatialUnit.SUID);
             DA.SetData(2, spatialUnit);
-            DA.SetDataList(3, data);
+            DA.SetData(3, origin);
+            DA.SetDataList(4, data);
 
         }
 
@@ -147,6 +149,25 @@ namespace IsovistTest {
             }
             return minDistanceSquared;
         }
+
+        /// ............................... FIND ORIGIN..............................................
+        
+        public Point3d FindOrigin(List<Point3d> allPts) {
+
+            Point3d localOrigin = allPts[0];
+            Point3d worldOrigin = new Point3d(0, 0, 0);
+            double smallestDistance = (allPts[0].DistanceToSquared(worldOrigin));
+
+            foreach (Point3d Pt in allPts) {
+                if (Pt.DistanceToSquared(worldOrigin) < smallestDistance) localOrigin = Pt;
+            }
+            return localOrigin;
+        }
+
+
+        /// ............................... Fi..............................................
+
+
 
 
 

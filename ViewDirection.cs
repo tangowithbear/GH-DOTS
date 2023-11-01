@@ -22,7 +22,7 @@ namespace IsovistTest {
         /// new tabs/panels will automatically be created.
         /// </summary>
         public OrientationComponent()
-          : base("Orient", "ViewOrientation",
+          : base("Orient", "ViewAccesOrientation",
             "Analyse the orientation of the isovist",
             "IndoorSpaceManager", "Vision") {
         }
@@ -128,14 +128,14 @@ namespace IsovistTest {
                                             out int west, out int southWest, out int south, out int southEast);
 
 
-            testSU.Orientation_Ext_EastScore =      east;
-            testSU.Orientation_Ext_NordEastScore =  nordEast;
-            testSU.Orientation_Ext_NordScore =      nord;
-            testSU.Orientation_Ext_NordWestScore =  nordWest;
-            testSU.Orientation_Ext_WestScore =      west;
-            testSU.Orientation_Ext_SouthWestScore = southWest;
-            testSU.Orientation_Ext_SouthScore =     south;
-            testSU.Orientation_Ext_SouthEastScore = southEast;
+            testSU.ViewAccessOrientation_Ext_EastScore =      east;
+            testSU.ViewAccessOrientation_Ext_NordEastScore =  nordEast;
+            testSU.ViewAccessOrientation_Ext_NordScore =      nord;
+            testSU.ViewAccessOrientation_Ext_NordWestScore =  nordWest;
+            testSU.ViewAccessOrientation_Ext_WestScore =      west;
+            testSU.ViewAccessOrientation_Ext_SouthWestScore = southWest;
+            testSU.ViewAccessOrientation_Ext_SouthScore =     south;
+            testSU.ViewAccessOrientation_Ext_SouthEastScore = southEast;
 
 
             List<string> data = AggregateProperties(testSU);

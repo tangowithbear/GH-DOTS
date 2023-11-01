@@ -124,11 +124,13 @@ namespace IsovistTest {
             List<string> listSUIDs = new List<string>();
             foreach (var property in props) {
 
-                string propertyValue;
+                string propertyValue = null;
 
                 if ((property.PropertyType == typeof(HashSet<SpatialUnit>)) || (property.PropertyType == typeof(List<SpatialUnit>))) {
 
                     var propertyValueList = (IEnumerable<SpatialUnit>)property.GetValue(testSU);
+                    if (propertyValueList == null) 
+                        continue;
                     var listSUID = propertyValueList.Select(SU => SU.SUID);
                     propertyValue = string.Join(", ", listSUID);
                 }
@@ -138,11 +140,7 @@ namespace IsovistTest {
                 else propertyValue = $"{property.GetValue(testSU)}";
 
                 string propString = $"{property.Name} : {propertyValue} ";
-
-                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
-
-                    result.Add(propString);
-                }
+                result.Add(propString);
             }
 
             return result;
