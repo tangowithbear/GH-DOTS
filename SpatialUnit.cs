@@ -43,10 +43,10 @@ namespace IsovistTest {
         public double  Isovist_Int_Compactness           { get; set; }
         public double  Isovist_Int_Occlusivity           { get; set; }
 
-        public double Isovist_Int_MajorAxisLength           { get; set; }
-        public double Isovist_Int_MajorAxisOrientation      { get; set; }
-        public double Isovist_Int_MinorAxisLength           { get; set; }
-        public double Isovist_Int_MinorAxisOrientation      { get; set; }
+        public Double? Isovist_Int_MajorAxisLength           { get; set; }
+        public Double? Isovist_Int_MajorAxisOrientation      { get; set; }
+        public Double? Isovist_Int_MinorAxisLength           { get; set; }
+        public Double? Isovist_Int_MinorAxisOrientation      { get; set; }
 
         public int ViewAccessOrientation_Ext_EastScore      { get; set; }
         public int ViewAccessOrientation_Ext_NordEastScore  { get; set; }
@@ -82,9 +82,9 @@ namespace IsovistTest {
 
         ///...........................VIEW CONTENT.......................
 
-        public double ViewContent_SkyPercentage                     { get; set; }
-        public double ViewContent_GroundPercentage                  { get; set; }
-        public double ViewContent_BuiltPercentage                   { get; set; }
+        public Double? ViewContent_SkyPercentage                     { get; set; }
+        public Double? ViewContent_GroundPercentage                  { get; set; }
+        public Double? ViewContent_BuiltPercentage                   { get; set; }
 
 
 
@@ -96,6 +96,15 @@ namespace IsovistTest {
             this.X = point3d.X;
             this.Y = point3d.Y;
             this.Z = point3d.Z;
+
+            this.Isovist_Int_MajorAxisOrientation = null;
+            this.Isovist_Int_MinorAxisOrientation = null;
+            this.Isovist_Int_MajorAxisLength = null;
+            this.Isovist_Int_MinorAxisLength = null;
+
+            this.ViewContent_BuiltPercentage = null;
+            this.ViewContent_GroundPercentage = null;
+            this.ViewContent_SkyPercentage = null;
         }
     }
 }
