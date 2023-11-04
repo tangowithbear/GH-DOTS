@@ -12,9 +12,9 @@ namespace IsovistTest {
 
         public string SUID          { get; set; }
         public Point3d Point3d      { get; set; }
-        public double localX        { get; set; }
-        public double localY        { get; set; }
-        public double localZ        { get; set; }
+        public double X             { get; set; }
+        public double Y             { get; set; }
+        public double Z             { get; set; }
         public double Area          { get; set; }
 
         ///public double floorHeight { get; set; }
@@ -92,11 +92,12 @@ namespace IsovistTest {
 
         public  SpatialUnit(Point3d point3d) {
 
-            this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
+            //this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
+            this.SUID = null;
             this.Point3d = point3d;
-            this.localX = point3d.X;
-            this.localY = point3d.Y;
-            this.localZ = point3d.Z;
+            this.X = point3d.X;
+            this.Y = point3d.Y;
+            this.Z = point3d.Z;
 
             this.Isovist_Int_MajorAxisOrientation = null;
             this.Isovist_Int_MinorAxisOrientation = null;
