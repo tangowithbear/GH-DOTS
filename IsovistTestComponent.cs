@@ -185,8 +185,8 @@ namespace IsovistTest {
             Point3d intGravityCentre = ComputeCentreOfGravity(vertices);
 
       
-            Double extCompactness = ComputeCopmactness(exteriorPerimeter.GetLength(), exteriorIsovistArea);
-            Double intCompactness = ComputeCopmactness(interiorPerimeter.GetLength(), interiorIsovistArea);
+            double extCompactness = ComputeCopmactness(exteriorPerimeter.GetLength(), exteriorIsovistArea);
+            double intCompactness = ComputeCopmactness(interiorPerimeter.GetLength(), interiorIsovistArea);
 
             Vector3d drift = IsovistDrift(testSU, intGravityCentre, out double driftMagnitude, out int driftAngle);
 

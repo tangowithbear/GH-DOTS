@@ -10,38 +10,38 @@ using System.Net;
 namespace IsovistTest {
     public class SpatialUnit {
 
-        public string SUID      { get; set; }
-        public Point3d Point3d  { get; set; }
-        public double X         { get; set; }
-        public double Y         { get; set; }
-        public double Z         { get; set; }
-        public double Area      { get; set; }
+        public string SUID          { get; set; }
+        public Point3d Point3d      { get; set; }
+        public double localX        { get; set; }
+        public double localY        { get; set; }
+        public double localZ        { get; set; }
+        public double Area          { get; set; }
 
-        /// public double Height { get; set; }
+        ///public double floorHeight { get; set; }
         ///public int Level { get; set; }
 
 
         /// ...........................ISOVIST...........................
 
 
-       // public Brep[]  Isovist_Ext_Isovist             { get; set; }
-        public int?  Isovist_Radius                    { get; set; }
-        public Curve   Isovist_Ext_PerimeterCurve        { get; set; }
-        public double? Isovist_Ext_Area                  { get; set; }
-        public double? Isovist_Ext_Perimeter             { get; set; }
-        public double? Isovist_Ext_Compactness           { get; set; }
-        public double? Isovist_Ext_Occlusivity           { get; set; }
+       // public Brep[]  Isovist_Ext_Isovist                { get; set; }
+        public int?     Isovist_Radius                      { get; set; }
+        public Curve    Isovist_Ext_PerimeterCurve          { get; set; }
+        public double?  Isovist_Ext_Area                    { get; set; }
+        public double?  Isovist_Ext_Perimeter               { get; set; }
+        public double?  Isovist_Ext_Compactness             { get; set; }
+        public double?  Isovist_Ext_Occlusivity             { get; set; }
 
-       // public Brep[]  Isovist_Int_Isovist             { get; set; }
-        public Curve   Isovist_Int_PerimeterCurve        { get; set; }
-        public Point3d Isovist_Int_CentreOfGravity       { get; set; }
-        public double? Isovist_Int_Area                  { get; set; }
-        public double? Isovist_Int_Perimeter             { get; set; }
-        public int?  Isovist_Int_NumberOfVertices      { get; set; }
-        public int?  Isovist_Int_DriftDirection        { get; set; }
-        public int?  Isovist_Int_DriftMagnitude        { get; set; }
-        public int?  Isovist_Int_Compactness           { get; set; }
-        public int?  Isovist_Int_Occlusivity           { get; set; }
+       // public Brep[]  Isovist_Int_Isovist                { get; set; }
+        public Curve    Isovist_Int_PerimeterCurve          { get; set; }
+        public Point3d  Isovist_Int_CentreOfGravity         { get; set; }
+        public double?  Isovist_Int_Area                    { get; set; }
+        public double?  Isovist_Int_Perimeter               { get; set; }
+        public int?     Isovist_Int_NumberOfVertices        { get; set; }
+        public int?     Isovist_Int_DriftDirection          { get; set; }
+        public double?  Isovist_Int_DriftMagnitude          { get; set; }
+        public double?  Isovist_Int_Compactness             { get; set; }
+        public int?     Isovist_Int_Occlusivity             { get; set; }
 
         public double? Isovist_Int_MajorAxisLength           { get; set; }
         public double? Isovist_Int_MajorAxisOrientation      { get; set; }
@@ -58,11 +58,12 @@ namespace IsovistTest {
         public int? ViewAccessOrientation_Ext_SouthEastScore { get; set; }
 
 
+
         ///public double Skewnes;
 
         /// ...........................VISIBILITY...........................
 
-        public double Visibility_Percentage         { get; set; }
+        public double? Visibility_Percentage         { get; set; }
 
         //public int    Visibility_Threshold      { get; set; }
         //public bool   Visibility_Visibility     { get; set; }
@@ -93,9 +94,9 @@ namespace IsovistTest {
 
             this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
             this.Point3d = point3d;
-            this.X = point3d.X;
-            this.Y = point3d.Y;
-            this.Z = point3d.Z;
+            this.localX = point3d.X;
+            this.localY = point3d.Y;
+            this.localZ = point3d.Z;
 
             this.Isovist_Int_MajorAxisOrientation = null;
             this.Isovist_Int_MinorAxisOrientation = null;
@@ -119,7 +120,23 @@ namespace IsovistTest {
             this.ViewAccessOrientation_Ext_SouthScore = null;
             this.ViewAccessOrientation_Ext_SouthEastScore = null;
 
+            this.Isovist_Ext_Area = null;
+            this.Isovist_Ext_Compactness = null;
+            this.Isovist_Ext_Occlusivity = null;
+            this.Isovist_Ext_Perimeter = null;
+            this.Isovist_Ext_PerimeterCurve = null;
+            this.Isovist_Int_Area = null;
+            this.Isovist_Int_CentreOfGravity = Point3d.Unset;
+            this.Isovist_Int_Compactness = null;
+            this.Isovist_Int_DriftDirection = null;
+            this.Isovist_Int_DriftMagnitude = null;
+            this.Isovist_Int_NumberOfVertices = null;
             this.Isovist_Int_Occlusivity = null;
+            this.Isovist_Int_Perimeter = null;
+            this.Isovist_Int_PerimeterCurve = null;
+
+            this.Visibility_Percentage = null;
+
 
         }
     }
