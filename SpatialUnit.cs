@@ -25,37 +25,37 @@ namespace IsovistTest {
 
 
        // public Brep[]  Isovist_Ext_Isovist             { get; set; }
-        public int     Isovist_Radius                    { get; set; }
+        public int?  Isovist_Radius                    { get; set; }
         public Curve   Isovist_Ext_PerimeterCurve        { get; set; }
-        public double  Isovist_Ext_Area                  { get; set; }
-        public double  Isovist_Ext_Perimeter             { get; set; }
-        public double  Isovist_Ext_Compactness           { get; set; }
-        public double  Isovist_Ext_Occlusivity           { get; set; }
+        public double? Isovist_Ext_Area                  { get; set; }
+        public double? Isovist_Ext_Perimeter             { get; set; }
+        public double? Isovist_Ext_Compactness           { get; set; }
+        public double? Isovist_Ext_Occlusivity           { get; set; }
 
        // public Brep[]  Isovist_Int_Isovist             { get; set; }
         public Curve   Isovist_Int_PerimeterCurve        { get; set; }
         public Point3d Isovist_Int_CentreOfGravity       { get; set; }
-        public double  Isovist_Int_Area                  { get; set; }
-        public double  Isovist_Int_Perimeter             { get; set; }
-        public int     Isovist_Int_NumberOfVertices      { get; set; }
-        public int     Isovist_Int_DriftDirection        { get; set; }
-        public double  Isovist_Int_DriftMagnitude        { get; set; }
-        public double  Isovist_Int_Compactness           { get; set; }
-        public double  Isovist_Int_Occlusivity           { get; set; }
+        public double? Isovist_Int_Area                  { get; set; }
+        public double? Isovist_Int_Perimeter             { get; set; }
+        public int?  Isovist_Int_NumberOfVertices      { get; set; }
+        public int?  Isovist_Int_DriftDirection        { get; set; }
+        public int?  Isovist_Int_DriftMagnitude        { get; set; }
+        public int?  Isovist_Int_Compactness           { get; set; }
+        public int?  Isovist_Int_Occlusivity           { get; set; }
 
-        public Double? Isovist_Int_MajorAxisLength           { get; set; }
-        public Double? Isovist_Int_MajorAxisOrientation      { get; set; }
-        public Double? Isovist_Int_MinorAxisLength           { get; set; }
-        public Double? Isovist_Int_MinorAxisOrientation      { get; set; }
+        public double? Isovist_Int_MajorAxisLength           { get; set; }
+        public double? Isovist_Int_MajorAxisOrientation      { get; set; }
+        public double? Isovist_Int_MinorAxisLength           { get; set; }
+        public double? Isovist_Int_MinorAxisOrientation      { get; set; }
 
-        public int ViewAccessOrientation_Ext_EastScore      { get; set; }
-        public int ViewAccessOrientation_Ext_NordEastScore  { get; set; }
-        public int ViewAccessOrientation_Ext_NordScore      { get; set; }
-        public int ViewAccessOrientation_Ext_NordWestScore  { get; set; }
-        public int ViewAccessOrientation_Ext_WestScore      { get; set; }
-        public int ViewAccessOrientation_Ext_SouthWestScore { get; set; }
-        public int ViewAccessOrientation_Ext_SouthScore     { get; set; }
-        public int ViewAccessOrientation_Ext_SouthEastScore { get; set; }
+        public int? ViewAccessOrientation_Ext_EastScore      { get; set; }
+        public int? ViewAccessOrientation_Ext_NordEastScore  { get; set; }
+        public int? ViewAccessOrientation_Ext_NordScore      { get; set; }
+        public int? ViewAccessOrientation_Ext_NordWestScore  { get; set; }
+        public int? ViewAccessOrientation_Ext_WestScore      { get; set; }
+        public int? ViewAccessOrientation_Ext_SouthWestScore { get; set; }
+        public int? ViewAccessOrientation_Ext_SouthScore     { get; set; }
+        public int? ViewAccessOrientation_Ext_SouthEastScore { get; set; }
 
 
         ///public double Skewnes;
@@ -69,11 +69,11 @@ namespace IsovistTest {
 
         ///...........................CONNECTIVITY......................... 
 
-        public double Connectivity_Percentage                       { get; set; }
-        public int Connectivity_NumberOfVisibleSUs                  { get; set; }
+        public double? Connectivity_Percentage                      { get; set; }
+        public int?  Connectivity_NumberOfVisibleSUs              { get; set; }
         public HashSet<SpatialUnit> Connectivity_VisibleUnits       { get; set; }
         public List<SpatialUnit> Connectivity_FarthestVisibleSUs    { get; set; }
-        public int Connectivity_ThroughVision                       { get; set; }
+        public int? Connectivity_ThroughVision                    { get; set; }
 
         /// public List<Tuple<SpatialUnit,Point3d,double, bool>>[]  { get; set; }
         /// public List<double> Distance                 { get; set; }
@@ -82,9 +82,9 @@ namespace IsovistTest {
 
         ///...........................VIEW CONTENT.......................
 
-        public Double? ViewContent_SkyPercentage                     { get; set; }
-        public Double? ViewContent_GroundPercentage                  { get; set; }
-        public Double? ViewContent_BuiltPercentage                   { get; set; }
+        public double? ViewContent_SkyPercentage                     { get; set; }
+        public double? ViewContent_GroundPercentage                  { get; set; }
+        public double? ViewContent_BuiltPercentage                   { get; set; }
 
 
 
@@ -105,6 +105,22 @@ namespace IsovistTest {
             this.ViewContent_BuiltPercentage = null;
             this.ViewContent_GroundPercentage = null;
             this.ViewContent_SkyPercentage = null;
+
+            this.Connectivity_Percentage = null;
+            this.Connectivity_NumberOfVisibleSUs = null;
+            this.Connectivity_ThroughVision = null;
+
+            this.ViewAccessOrientation_Ext_EastScore = null;
+            this.ViewAccessOrientation_Ext_NordEastScore = null;
+            this.ViewAccessOrientation_Ext_NordScore = null;
+            this.ViewAccessOrientation_Ext_NordWestScore = null;
+            this.ViewAccessOrientation_Ext_WestScore = null;
+            this.ViewAccessOrientation_Ext_SouthWestScore = null;
+            this.ViewAccessOrientation_Ext_SouthScore = null;
+            this.ViewAccessOrientation_Ext_SouthEastScore = null;
+
+            this.Isovist_Int_Occlusivity = null;
+
         }
     }
 }

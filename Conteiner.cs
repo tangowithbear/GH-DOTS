@@ -129,13 +129,16 @@ namespace IsovistTest {
                 if ((property.PropertyType == typeof(HashSet<SpatialUnit>)) || (property.PropertyType == typeof(List<SpatialUnit>))) {
 
                     var propertyValueList = (IEnumerable<SpatialUnit>)property.GetValue(testSU);
-                    if (propertyValueList == null) 
+                    if (propertyValueList == null)
                         continue;
                     var listSUID = propertyValueList.Select(SU => SU.SUID);
                     propertyValue = string.Join(", ", listSUID);
                 }
 
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+
+                else if (property.GetValue(testSU) == null)
+                    continue;
 
                 else propertyValue = $"{property.GetValue(testSU)}";
 
