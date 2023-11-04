@@ -130,14 +130,13 @@ namespace IsovistTest {
                 spatialUnitTmp.Area = area;
                 allSUs.Add(spatialUnitTmp);
                 allTestPts.Add(Pt);
-                List<string> data = AggregateProperties(spatialUnitTmp);
-                dataList.Add(data);
-
             }
 
             for (int i = 0; i < allSUs.Count; i++) { 
                 allSUs[i].SUID = "SU" + i;
                 listSUID.Add(allSUs[i].SUID);
+                List<string> data = AggregateProperties(allSUs[i]);
+                dataList.Add(data);
             }
 
             Grasshopper.DataTree<object> tree = new Grasshopper.DataTree<object>();
@@ -148,6 +147,11 @@ namespace IsovistTest {
                 }   
             }
             
+
+
+
+
+
             Point3d origin = FindOrigin(allPts);
 
             DA.SetDataList  (0, allTestPts);
