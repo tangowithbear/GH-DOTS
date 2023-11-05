@@ -10,12 +10,14 @@ using System.Net;
 namespace IsovistTest {
     public class SpatialUnit {
 
-        public string SUID          { get; set; }
-        public Point3d Point3d      { get; set; }
-        public double X             { get; set; }
-        public double Y             { get; set; }
-        public double Z             { get; set; }
-        public double Area          { get; set; }
+        /// ...........................CAST...........................
+
+        public string   SUID         { get; set; }
+        public Point3d  Gen_Point3d      { get; set; }
+        public double   Gen_X            { get; set; }
+        public double   Gen_Y            { get; set; }
+        public double   Gen_Z            { get; set; }
+        public double   Gen_Area         { get; set; }
 
         ///public double floorHeight { get; set; }
         ///public int Level { get; set; }
@@ -92,12 +94,12 @@ namespace IsovistTest {
 
         public  SpatialUnit(Point3d point3d) {
 
-            //this.SUID = point3d.X.ToString() + "_" + point3d.Y.ToString() + "_" + point3d.Z.ToString();
+            //this.SUID = point3d.Gen_X.ToString() + "_" + point3d.Gen_Y.ToString() + "_" + point3d.Gen_Z.ToString();
             this.SUID = null;
-            this.Point3d = point3d;
-            this.X = point3d.X;
-            this.Y = point3d.Y;
-            this.Z = point3d.Z;
+            this.Gen_Point3d = point3d;
+            this.Gen_X = point3d.X;
+            this.Gen_Y = point3d.Y;
+            this.Gen_Z = point3d.Z;
 
             this.Isovist_Int_MajorAxisOrientation = null;
             this.Isovist_Int_MinorAxisOrientation = null;

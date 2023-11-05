@@ -114,7 +114,7 @@ namespace IsovistTest {
                 return;
             }
 
-            testPoint = testSU.Point3d;
+            testPoint = testSU.Gen_Point3d;
             Curve perimeterCurve = testSU.Isovist_Ext_PerimeterCurve;
 
 
@@ -150,8 +150,8 @@ namespace IsovistTest {
 
         /// .........................COMPUTE ENDPOINTS.......................................
         public List<Point3d> ComputeEndPoints(SpatialUnit testSU) {
-            Plane plane1 = new Plane(testSU.Point3d, Vector3d.XAxis, Vector3d.YAxis);
-            Circle c = new Circle(plane1, testSU.Point3d,(double) testSU.Isovist_Radius);
+            Plane plane1 = new Plane(testSU.Gen_Point3d, Vector3d.XAxis, Vector3d.YAxis);
+            Circle c = new Circle(plane1, testSU.Gen_Point3d,(double) testSU.Isovist_Radius);
 
             int N = 360;
             List<Point3d> endPoints = new List<Point3d>();

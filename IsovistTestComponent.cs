@@ -135,12 +135,12 @@ namespace IsovistTest {
             }
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
 
@@ -152,7 +152,7 @@ namespace IsovistTest {
                 return;
             }
 
-            testPoint = testSU.Point3d;
+            testPoint = testSU.Gen_Point3d;
 
             List<GeometryBase> obstacles = new List<GeometryBase>(interiorObstacles);
             obstacles.AddRange(exteriorObstacles);
@@ -168,7 +168,7 @@ namespace IsovistTest {
 
             List<Point3d> allIntersectionPoints = ComputeExtIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
             List<Point3d> interiorIntersectionPoints = ComputeIntIntersectionPoints(testPoint, endPoints, rays, interiorObstacles, false);
-            ///List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
+            ///List<Gen_Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, endPoints, rays, obstacles, true);
 
             List<Point3d> interiorPerimeterPoints = ComputeIntPerimeterPoints(testPoint, interiorIntersectionPoints, endPoints);
             Curve interiorPerimeter = CreatePerimeterCurve(interiorPerimeterPoints);
@@ -180,7 +180,7 @@ namespace IsovistTest {
             Brep[] exteriorIsoVist = CreateIsoVist(exteriorPerimeter);
             Double exteriorIsovistArea = ComputeIsoVistArea(exteriorIsoVist);
 
-            // List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
+            // List<Gen_Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
             List<Point3d> vertices = ComputeVertices(interiorPerimeterPoints);
             Point3d intGravityCentre = ComputeCentreOfGravity(vertices);
 
@@ -420,7 +420,7 @@ namespace IsovistTest {
 
                 /*double tol = 0.001;
 
-                if (Math.Pow(((Pt2.X - Pt0.X) / (Pt1.X - Pt0.X)) - ((Pt2.Y - Pt0.Y) / (Pt1.Y - Pt0.Y)), 2) > tol) {
+                if (Math.Pow(((Pt2.Gen_X - Pt0.Gen_X) / (Pt1.Gen_X - Pt0.Gen_X)) - ((Pt2.Gen_Y - Pt0.Gen_Y) / (Pt1.Gen_Y - Pt0.Gen_Y)), 2) > tol) {
                     vertices.Add(Pt1);
                 }*/
             }
@@ -445,7 +445,7 @@ namespace IsovistTest {
         ///.........................COMPUTE DRIFT.....................................
 
         public Vector3d IsovistDrift(SpatialUnit testSU, Point3d gravityCntr, out double driftMagnitude, out int driftAngle) {
-            Vector3d drift = gravityCntr - testSU.Point3d;
+            Vector3d drift = gravityCntr - testSU.Gen_Point3d;
             driftMagnitude = drift.Length;
             double driftAngleRadians = Vector3d.VectorAngle(Vector3d.XAxis, drift, Plane.WorldXY);
             driftAngle = (int)((180.0 / Math.PI) * driftAngleRadians);

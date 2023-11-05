@@ -135,7 +135,7 @@ namespace IsovistTest {
                 return;
             }
 
-            testPoint = testSU.Point3d;
+            testPoint = testSU.Gen_Point3d;
 
                  
 
@@ -145,12 +145,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
 

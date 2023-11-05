@@ -135,7 +135,7 @@ namespace IsovistTest {
                 return;
             }
 
-            testPoint = testSU.Point3d;
+            testPoint = testSU.Gen_Point3d;
 
 
             var v = Params.Input[3].Sources[0];
@@ -143,12 +143,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
 
@@ -163,9 +163,9 @@ namespace IsovistTest {
 
 
 
-            Brep[] skyViz    = CreateChartViz(testSU.Point3d, testSU.Area * 100, (testSU.Area * 100) - skyPercentage);
-            Brep[] builtViz  = CreateChartViz(testSU.Point3d, groundPercentage + builtPercentage, groundPercentage);
-            Brep[] groundViz = CreateChartViz(testSU.Point3d, groundPercentage, 0.5);
+            Brep[] skyViz    = CreateChartViz(testSU.Gen_Point3d, testSU.Gen_Area * 100, (testSU.Gen_Area * 100) - skyPercentage);
+            Brep[] builtViz  = CreateChartViz(testSU.Gen_Point3d, groundPercentage + builtPercentage, groundPercentage);
+            Brep[] groundViz = CreateChartViz(testSU.Gen_Point3d, groundPercentage, 0.5);
 
             List<string> data = AggregateProperties(testSU);
 

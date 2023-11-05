@@ -106,12 +106,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
@@ -123,13 +123,13 @@ namespace IsovistTest {
 
             foreach (Point3d Pt in allPts) {
                 SpatialUnit spatialUnitTmp = new SpatialUnit(Pt);
-                spatialUnitTmp.Area = area;
+                spatialUnitTmp.Gen_Area = area;
                 allSUs.Add(spatialUnitTmp);
             }
 
 
             SpatialUnit spatialUnit = new SpatialUnit(testPoint);
-            spatialUnit.Area = area;
+            spatialUnit.Gen_Area = area;
 
 
 
@@ -137,7 +137,7 @@ namespace IsovistTest {
             List<string> data = AggregateProperties(spatialUnit);
             Point3d origin = FindOrigin(allPts);
 
-            DA.SetData(0, spatialUnit.Point3d);
+            DA.SetData(0, spatialUnit.Gen_Point3d);
             DA.SetData(1, spatialUnit.SUID);
             DA.SetData(2, spatialUnit);
             DA.SetData(3, origin);

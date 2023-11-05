@@ -104,13 +104,13 @@ namespace IsovistTest {
             object valueSubject = null;
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}     
 
             // Then we need to access the input parameters individually. 
@@ -148,7 +148,7 @@ namespace IsovistTest {
 
             List <Point3d> testPoints = new List<Point3d> ();
             foreach ( SpatialUnit SU in allSUs) {
-                testPoints.Add(SU.Point3d);
+                testPoints.Add(SU.Gen_Point3d);
             }
 
 
@@ -177,7 +177,7 @@ namespace IsovistTest {
             foreach (SpatialUnit SU in filteredSU2) {
                 if (!dic.ContainsValue(SU.SUID)) {
                     dic.Add(SU, SU.SUID);
-                    FSUtestPoints.Add(SU.Point3d);
+                    FSUtestPoints.Add(SU.Gen_Point3d);
                 }
             }
 
@@ -284,7 +284,7 @@ namespace IsovistTest {
                     if ((valuePredicate == 3) && (doublePropertyValue < valueSubjectDouble)) filteredSU.Add(SU);
 
 
-                    //if (!(propertyValue is List<Point3d>) && !(propertyValue is HashSet<SpatialUnit>)) {
+                    //if (!(propertyValue is List<Gen_Point3d>) && !(propertyValue is HashSet<SpatialUnit>)) {
 
                     //    if ((valuePredicate == 0) && ((double)propertyValue == valueSubjectDouble)) filteredSU.Add(SU);
                     //    if ((valuePredicate == 1) && ((double)propertyValue != valueSubjectDouble)) filteredSU.Add(SU);

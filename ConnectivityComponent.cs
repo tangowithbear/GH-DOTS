@@ -149,7 +149,7 @@ namespace IsovistTest {
                 return;
             }
 
-            testPoint = testSU.Point3d;
+            testPoint = testSU.Gen_Point3d;
 
 
             var v = Params.Input[3].Sources[0];
@@ -158,12 +158,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
 
@@ -187,7 +187,7 @@ namespace IsovistTest {
 
             List<Point3d> visibleSUTestPoints = new List<Point3d>();
             foreach (SpatialUnit SU in visibleSUs) {
-                visibleSUTestPoints.Add(SU.Point3d);
+                visibleSUTestPoints.Add(SU.Gen_Point3d);
             }
             double percentage = CalculatePercentage(visibleSUs, allSUs);
             int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles) / 2;
@@ -226,10 +226,10 @@ namespace IsovistTest {
             visibleSUs = new HashSet<SpatialUnit>();
             intersectionPoints = new List<Point3d>();
             foreach (SpatialUnit targetSU in targetSUs) {
-                if (testSU.Point3d != targetSU.Point3d) {
+                if (testSU.Gen_Point3d != targetSU.Gen_Point3d) {
 
-                    Point3d theClosestPoint = targetSU.Point3d;
-                    Line raytmp = new Rhino.Geometry.Line(testSU.Point3d, targetSU.Point3d);
+                    Point3d theClosestPoint = targetSU.Gen_Point3d;
+                    Line raytmp = new Rhino.Geometry.Line(testSU.Gen_Point3d, targetSU.Gen_Point3d);
                     Curve ray = raytmp.ToNurbsCurve();
                     List<Point3d> obstacleIntersectPoints = new List<Point3d>();
 
@@ -240,8 +240,8 @@ namespace IsovistTest {
                         var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
                         if (brepIntersectPoints.Count() > 0) {
                             obstacleIntersectPoints.AddRange(brepIntersectPoints);
-                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testSU.Point3d);
-                            if (testSU.Point3d.DistanceToSquared(currClosestPoint) < testSU.Point3d.DistanceToSquared(theClosestPoint)) {
+                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testSU.Gen_Point3d);
+                            if (testSU.Gen_Point3d.DistanceToSquared(currClosestPoint) < testSU.Gen_Point3d.DistanceToSquared(theClosestPoint)) {
                                 theClosestPoint = currClosestPoint;
                                 intersectionPoints.Add(theClosestPoint);
                             }
@@ -262,14 +262,14 @@ namespace IsovistTest {
             Double maxDistanceSquared = 0.00;
 
             foreach (SpatialUnit SU in visibleSUS) { 
-                if (testSU.Point3d.DistanceToSquared(SU.Point3d) > maxDistanceSquared) {
-                    maxDistanceSquared = testSU.Point3d.DistanceToSquared(SU.Point3d);
+                if (testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d) > maxDistanceSquared) {
+                    maxDistanceSquared = testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d);
                     farthestSU = SU;   
                 }
             }
 
             foreach (SpatialUnit SU in visibleSUS) {
-                if (testSU.Point3d.DistanceToSquared(SU.Point3d) == maxDistanceSquared) {
+                if (testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d) == maxDistanceSquared) {
                     result.Add(SU);
                 }
             }
@@ -289,7 +289,7 @@ namespace IsovistTest {
 
         public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts, List<GeometryBase>obstacles) {
 
-            Sphere xSphere = new Sphere(SU.Point3d, Math.Sqrt(SU.Area) / 2);
+            Sphere xSphere = new Sphere(SU.Gen_Point3d, Math.Sqrt(SU.Gen_Area) / 2);
             Brep targetSphere = xSphere.ToBrep();
             //connections = new List <LineCurve>();
             int throughtVision = 0;

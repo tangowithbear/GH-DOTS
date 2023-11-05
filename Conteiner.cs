@@ -70,7 +70,7 @@ namespace IsovistTest {
             // We'll start by declaring variables and assigning them starting values.
 
 
-            //Point3d testPoint = Point3d.Unset;
+            //Gen_Point3d testPoint = Gen_Point3d.Unset;
             SpatialUnit spatialUnit = null;
             List<SpatialUnit> allSU = new List<SpatialUnit>();
 
@@ -90,12 +90,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
 

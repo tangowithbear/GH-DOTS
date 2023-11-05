@@ -95,7 +95,7 @@ namespace IsovistTest {
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            /*if (testPoint == Point3d.Unset) {
+            /*if (testPoint == Gen_Point3d.Unset) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
@@ -107,12 +107,12 @@ namespace IsovistTest {
 
 
             //object tiutout = null;
-            //if (tiutout is Point3d point3d) {
+            //if (tiutout is Gen_Point3d point3d) {
             //}
 
             //else {
             //    List<object> tiutoutList = null;
-            //    List<Point3d> myPoint3dList = tiutoutList.OfType<Point3d>().ToList();
+            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
             //}
 
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
@@ -127,7 +127,7 @@ namespace IsovistTest {
 
             foreach (Point3d Pt in allPts) {
                 SpatialUnit spatialUnitTmp = new SpatialUnit(Pt);
-                spatialUnitTmp.Area = area;
+                spatialUnitTmp.Gen_Area = area;
                 allSUs.Add(spatialUnitTmp);
                 allTestPts.Add(Pt);
             }
