@@ -195,9 +195,6 @@ namespace IsovistTest {
 
 
         /// ............................... Fi..............................................
-        public void GenerateSUID(List<SpatialUnit> all) {
-
-        }
 
 
 
@@ -210,17 +207,36 @@ namespace IsovistTest {
 
             Type t = testSU.GetType();
             PropertyInfo[] props = t.GetProperties();
+            List<string> listSUIDs = new List<string>();
             foreach (var property in props) {
 
-                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
-                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                string propertyValue = null;
 
+                if ((property.PropertyType == typeof(HashSet<SpatialUnit>)) || (property.PropertyType == typeof(List<SpatialUnit>))) {
+
+                    var propertyValueList = (IEnumerable<SpatialUnit>)property.GetValue(testSU);
+                    if (propertyValueList == null)
+                        continue;
+                    var listSUID = propertyValueList.Select(SU => SU.SUID);
+                    propertyValue = string.Join(", ", listSUID);
+                }
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+
+                else if (property.GetValue(testSU) == null)
+                    continue;
+
+                else if (property.Name == "Isovist_Int_CentreOfGravity")
+                    continue;
+
+                else propertyValue = $"{property.GetValue(testSU)}";
+
+                string propString = $"{property.Name} : {propertyValue} ";
                 result.Add(propString);
             }
 
             return result;
         }
-
 
         public override GH_Exposure Exposure => GH_Exposure.primary;
 
