@@ -1,6 +1,7 @@
 ﻿using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Components;
+using Grasshopper.Kernel.Data;
 using Rhino.Collections;
 using Rhino.Geometry;
 using Rhino.UI.ObjectProperties;
@@ -12,7 +13,7 @@ using System.Net;
 using System.Reflection;
 
 namespace IsovistTest {
-    public class GenerateSUcomponent : GH_Component {
+    public class GenerateSUtestcomponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -20,7 +21,7 @@ namespace IsovistTest {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public GenerateSUcomponent()
+        public GenerateSUtestcomponent()
           : base("GenSU", "GenerateSU",
             "Cast to SU",
             "IndoorSpaceManager", "Map") {
@@ -36,7 +37,7 @@ namespace IsovistTest {
             // to import lists or trees of values, modify the ParamAccess flag.
 
 
-            pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
+            //pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddPointParameter("All Points", "PTs", "A list of all Points", GH_ParamAccess.list);
 
 
@@ -56,9 +57,9 @@ namespace IsovistTest {
             pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifire", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
             pManager.AddPointParameter("Origin", "O", "Origin location", GH_ParamAccess.item);
-            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.item);
 
-            
+
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -75,9 +76,9 @@ namespace IsovistTest {
             // We'll start by declaring variables and assigning them starting values.
 
 
-            Point3d testPoint = Point3d.Unset;
+
             List<Point3d> allPts = new List<Point3d>();
-            List<Point3d> allTestPoints = new List<Point3d>();
+
 
 
             // Then we need to access the input parameters individually. 
@@ -89,19 +90,19 @@ namespace IsovistTest {
             //if (!DA.GetData(3, ref turns)) return;
 
 
-            if (!DA.GetData(0, ref testPoint)) return; 
-            if (!DA.GetDataList<Point3d>(1, allPts)) return;
+            //if (!DA.GetData(0, ref testPoint)) return;
+            if (!DA.GetDataList<Point3d>(0, allPts)) return;
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (testPoint == Point3d.Unset) {
+            /*if (testPoint == Gen_Point3d.Unset) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
                 return;
             }
             if (allPts.Count <= 1) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
                 return;
-            }
+            }*/
 
 
 
@@ -120,28 +121,44 @@ namespace IsovistTest {
             double area = Area(allPts);
 
             List<SpatialUnit> allSUs = new List<SpatialUnit>();
+            List<Point3d> allTestPts = new List<Point3d>();
+            List<List<string>> dataList = new List<List<string>>();  ///
+            List<string> listSUID = new List<string> ();
 
             foreach (Point3d Pt in allPts) {
                 SpatialUnit spatialUnitTmp = new SpatialUnit(Pt);
                 spatialUnitTmp.Gen_Area = area;
                 allSUs.Add(spatialUnitTmp);
+                allTestPts.Add(Pt);
             }
 
+            for (int i = 0; i < allSUs.Count; i++) { 
+                allSUs[i].SUID = "SU" + i;
+                listSUID.Add(allSUs[i].SUID);
+                List<string> data = AggregateProperties(allSUs[i]);
+                dataList.Add(data);
+            }
 
-            SpatialUnit spatialUnit = new SpatialUnit(testPoint);
-            spatialUnit.Gen_Area = area;
+            Grasshopper.DataTree<object> tree = new Grasshopper.DataTree<object>();
+
+            for (int i = 0; i < dataList.Count; i++) {
+                for (int j = 0; j < dataList[i].Count; j++) {
+                    tree.Add(dataList[i][j], new GH_Path(i));
+                }   
+            }
+            
 
 
 
 
-            List<string> data = AggregateProperties(spatialUnit);
+
             Point3d origin = FindOrigin(allPts);
 
-            DA.SetData(0, spatialUnit.Gen_Point3d);
-            DA.SetData(1, spatialUnit.SUID);
-            DA.SetData(2, spatialUnit);
-            DA.SetData(3, origin);
-            DA.SetDataList(4, data);
+            DA.SetDataList  (0, allTestPts);
+            DA.SetDataList  (1, listSUID);
+            DA.SetDataList  (2, allSUs);
+            DA.SetData      (3, origin);
+            DA.SetDataTree  (4, tree);
 
         }
 
@@ -154,7 +171,7 @@ namespace IsovistTest {
             Double minDistanceSquared = allPts[0].DistanceToSquared(allPts[1]);
 
             for (int i = 2; i < allPts.Count; i++) {
-                if (allPts[0].DistanceToSquared(allPts[i]) < minDistanceSquared)  {
+                if (allPts[0].DistanceToSquared(allPts[i]) < minDistanceSquared) {
                     minDistanceSquared = allPts[0].DistanceToSquared(allPts[i]);
 
                 }
@@ -163,7 +180,7 @@ namespace IsovistTest {
         }
 
         /// ............................... FIND ORIGIN..............................................
-        
+
         public Point3d FindOrigin(List<Point3d> allPts) {
 
             Point3d localOrigin = allPts[0];
@@ -178,31 +195,49 @@ namespace IsovistTest {
 
 
         /// ............................... Fi..............................................
-         public void GenerateSUID(List<SpatialUnit> all) {
-
-         }
 
 
 
 
         /// ...............................MAKE A PROPERTY/VALUE LIST.................................
 
-        public List<string> AggregateProperties (SpatialUnit testSU) {
+        public List<string> AggregateProperties(SpatialUnit testSU) {
 
             List<string> result = new List<string>();
 
             Type t = testSU.GetType();
-            PropertyInfo[] props = t.GetProperties(); 
+            PropertyInfo[] props = t.GetProperties();
+            List<string> listSUIDs = new List<string>();
             foreach (var property in props) {
 
-                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
-                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+                string propertyValue = null;
 
+                if ((property.PropertyType == typeof(HashSet<SpatialUnit>)) || (property.PropertyType == typeof(List<SpatialUnit>))) {
+
+                    var propertyValueList = (IEnumerable<SpatialUnit>)property.GetValue(testSU);
+                    if (propertyValueList == null)
+                        continue;
+                    var listSUID = propertyValueList.Select(SU => SU.SUID);
+                    propertyValue = string.Join(", ", listSUID);
+                }
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+
+                else if (property.GetValue(testSU) == null)
+                    continue;
+
+                else if (property.Name == "Isovist_Int_CentreOfGravity")
+                    continue;
+
+                else propertyValue = $"{property.GetValue(testSU)}";
+
+                string propString = $"{property.Name} : {propertyValue} ";
                 result.Add(propString);
             }
 
             return result;
-        } 
+        }
+
         public override GH_Exposure Exposure => GH_Exposure.primary;
 
         /// <summary>
@@ -220,6 +255,6 @@ namespace IsovistTest {
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("0B9CC89F-4381-447E-B76D-3DF183C7718E");
+        public override Guid ComponentGuid => new Guid("EFA927CA-D30A-4411-B3FC-34B84046A363");
     }
 }

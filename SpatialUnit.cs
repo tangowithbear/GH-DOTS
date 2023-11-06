@@ -19,14 +19,18 @@ namespace IsovistTest {
         public double   Gen_Z            { get; set; }
         public double   Gen_Area         { get; set; }
 
-        ///public double floorHeight { get; set; }
-        ///public int Level { get; set; }
+
+        /// ...........................MODEL...........................
+
+        public double?  Model_FloorHeight        { get; set; }
+        public double?  Model_DistanceToStructure   { get; set; }
+        public double?  Model_DistancetToEnvelope   { get; set; }
 
 
         /// ...........................ISOVIST...........................
 
 
-       // public Brep[]  Isovist_Ext_Isovist                { get; set; }
+        // public Brep[]  Isovist_Ext_Isovist                { get; set; }
         public int?     Isovist_Radius                      { get; set; }
         public Curve    Isovist_Ext_PerimeterCurve          { get; set; }
         public double?  Isovist_Ext_Area                    { get; set; }

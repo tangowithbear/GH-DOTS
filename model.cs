@@ -13,7 +13,7 @@ using System.Net;
 using System.Reflection;
 
 namespace IsovistTest {
-    public class ConnectivityComponent : GH_Component {
+    public class ModelComponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -21,9 +21,9 @@ namespace IsovistTest {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public ConnectivityComponent()
-          : base("Visual connectivity", "Connectivity",
-            "Check the visual connections",
+        public ModelComponent()
+          : base("Model structure", "Model",
+            "Struction related metrics",
             "IndoorSpaceManager", "Vision") {
         }
 
@@ -42,10 +42,8 @@ namespace IsovistTest {
             //pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
 
             pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
-            pManager.AddGenericParameter("All Spatial Units", "allSUs", "A list of Spatial Units ", GH_ParamAccess.list);
-            //pManager.AddIntegerParameter("Threshold", "T", "the percentage of the visible part to consider the object is visible, Default = 20", GH_ParamAccess.item);
-            pManager.AddGeometryParameter("Static obstacles", "IO", "opaque Building geometry including the exterieor walls", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Dynamic obstacles", "EO", "Opaque Exteriour geometry", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Interior Structure", "IS", "Building geometry excluding the envelope", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Envelope", "E", "Building envelope", GH_ParamAccess.list);
 
 
 
@@ -60,18 +58,11 @@ namespace IsovistTest {
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
-            //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
-            //pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
-            pManager.AddPointParameter("Intersection Points", "IP", "Intersections points with static obstacles", GH_ParamAccess.list);
-            //pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
-            //pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Number of visible units", "N", "Number of visible units from of the test unit", GH_ParamAccess.item);
-            pManager.AddPointParameter("Visible spatial units test Points", "VSU", "Returns a list of visible SUID", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Through vision", "TV", "Number of gaze intersections", GH_ParamAccess.item);
-           // pManager.AddGeometryParameter("Sphere", "S", "SPHERE", GH_ParamAccess.item);
-           // pManager.AddLineParameter("Connections", "Con", "Connections", GH_ParamAccess.list);
+            pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Floot to floor", "FF", "Floor to floor height", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Distance to structure", "DS", "Distance to closest structural element", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Distance to Envelope", "DE", "Distence to closest envelope element", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
 
             //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
@@ -96,10 +87,8 @@ namespace IsovistTest {
 
 
             Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
-            List<SpatialUnit> allSUs = new List<SpatialUnit>();
-            //int threshold = 20;
-            List<GeometryBase> staticObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
-            List<GeometryBase> dynamicObstacles = new List<GeometryBase>();
+            List<GeometryBase> structureObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
+            List<GeometryBase> envelopeObstacles = new List<GeometryBase>();
 
 
 
@@ -116,13 +105,8 @@ namespace IsovistTest {
             Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
             if (!DA.GetData(0, ref obj)) return;
-            if (!DA.GetDataList<SpatialUnit>(1, allSUs)) return;
-            // if (!DA.GetData(2, ref threshold)) return;
-            if (!DA.GetDataList<GeometryBase>(2, staticObstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(3, dynamicObstacles)) return;
-
-
-
+            if (!DA.GetDataList<GeometryBase>(1, structureObstacles)) return;
+            if (!DA.GetDataList<GeometryBase>(2, envelopeObstacles)) return;
 
 
             // We should now validate the data and warn the user if invalid data is supplied.
@@ -131,15 +115,16 @@ namespace IsovistTest {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Spatial Unit  is provided");
                 return;
             }
-            if (allSUs.Count <= 1) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
-                return;
-            }
-            if (staticObstacles == null || dynamicObstacles == null) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No obstacles is provided");
+
+            if (structureObstacles == null || structureObstacles == null) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No structuralobstacles is provided");
                 return;
             }
 
+            if (envelopeObstacles == null || envelopeObstacles == null) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No envelopeobstacles is provided");
+                return;
+            }
 
 
             SpatialUnit testSU = obj.Value as SpatialUnit;
@@ -152,23 +137,7 @@ namespace IsovistTest {
             testPoint = testSU.Gen_Point3d;
 
 
-            var v = Params.Input[3].Sources[0];
-            string bonusName = v.NickName;
 
-
-
-            //object tiutout = null;
-            //if (tiutout is Gen_Point3d point3d) {
-            //}
-
-            //else {
-            //    List<object> tiutoutList = null;
-            //    List<Gen_Point3d> myPoint3dList = tiutoutList.OfType<Gen_Point3d>().ToList();
-            //}
-
-
-            List<GeometryBase> obstacles = new List<GeometryBase>(staticObstacles);
-            obstacles.AddRange(dynamicObstacles);
 
 
 
@@ -176,46 +145,70 @@ namespace IsovistTest {
             // The actual functionality will be in a different method:
 
 
-            HashSet<SpatialUnit> visibleSUs = new HashSet<SpatialUnit>();
-            List<SpatialUnit> visibleSUList = visibleSUs.ToList();
+
             List<Point3d> intersectionPoints = new List<Point3d>();
 
+            List<GeometryBase> obstacles = new List<GeometryBase>(structureObstacles);
+            obstacles.AddRange(envelopeObstacles);
 
+            double floorHeight = ComputeFloorToFloorDistance(testSU, obstacles);
+            double disToStructure = 0.00;
+            double disToEnvelope = 0.00;
 
-            ComputeConnectivity(testSU, allSUs, obstacles, out visibleSUs, out intersectionPoints);
-            int visibleSUNumber = visibleSUs.AsEnumerable().Count();
-
-            List<Point3d> visibleSUTestPoints = new List<Point3d>();
-            foreach (SpatialUnit SU in visibleSUs) {
-                visibleSUTestPoints.Add(SU.Gen_Point3d);
-            }
-            double percentage = CalculatePercentage(visibleSUs, allSUs);
-            int throughVision = CalculateThroughtVision(testSU, visibleSUTestPoints, obstacles) / 2;
-
-            List<SpatialUnit> farthestVisibleSUs = CalculateFarthestVisibleSUs(testSU, visibleSUs);
-
-            testSU.Connectivity_Percentage = percentage;
-            testSU.Connectivity_NumberOfVisibleSUs = visibleSUNumber;
-            testSU.Connectivity_FarthestVisibleSUs = farthestVisibleSUs;
-            testSU.Connectivity_VisibleUnits = visibleSUs;
-            testSU.Connectivity_ThroughVision = throughVision;
-
+            testSU.Model_FloorHeight = floorHeight;
+            testSU.Model_DistanceToStructure = disToStructure;
+            testSU.Model_DistancetToEnvelope = disToEnvelope;
 
             List<string> data = AggregateProperties(testSU);
 
-
-            DA.SetDataList(0, intersectionPoints);
-            DA.SetData(1, percentage);
-            DA.SetData(2, visibleSUNumber);
-            DA.SetDataList(3, visibleSUTestPoints);
-            DA.SetData(4, throughVision);
-            //DA.SetData(5, targetSphere);
-            //DA.SetDataList(6, connections);
-            DA.SetDataList(5, data);
+            DA.SetData(0, testPoint);
+            DA.SetData(1, floorHeight);
+            DA.SetData(2, disToStructure);
+            DA.SetData(3, disToEnvelope);
+            DA.SetDataList(4, data);
         }
 
 
 
+        /// .........................COMPUTE FLOOR TO FLOOR HEIGHT................................
+        public double ComputeFloorToFloorDistance (SpatialUnit SU, List<GeometryBase> obstacles) {
+            double floorHeight = 0.00;
+            Vector3d downVector = new Vector3d(0, 0, -1);
+            Vector3d upVector   = new Vector3d(0, 0,  1);
+
+            Ray3d rayDown = new Ray3d(SU.Gen_Point3d, downVector);
+            Point3d[] downIntersectionPoints = Intersection.RayShoot(rayDown, obstacles, 1);
+
+            double minDistance = double.MaxValue;
+            Point3d floorPoint = Point3d.Unset;
+
+            foreach (Point3d Pt in downIntersectionPoints) {
+                double distance = SU.Gen_Point3d.DistanceTo(Pt);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    floorPoint = Pt;
+                }
+            }
+
+
+            Ray3d rayUp = new Ray3d(floorPoint, upVector);
+            Point3d[] upIntersectionPoints = Intersection.RayShoot(rayUp, obstacles, 1);
+
+            double minDistance2 = double.MaxValue;
+            Point3d ceilingPoint = Point3d.Unset;
+
+            foreach (Point3d Pt in upIntersectionPoints) {
+                double distance = floorPoint.DistanceTo(Pt);
+                if (distance < minDistance2) {
+                    minDistance2 = distance;
+                    ceilingPoint = Pt;
+                }
+            }
+
+            floorHeight = minDistance2;
+
+            return floorHeight;
+        }
 
 
         /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
@@ -255,67 +248,6 @@ namespace IsovistTest {
             return visibleSUs;
         }
 
-        public static List<SpatialUnit> CalculateFarthestVisibleSUs (SpatialUnit testSU, HashSet<SpatialUnit> visibleSUS) {
-            
-            List<SpatialUnit> result = new List<SpatialUnit>();
-            SpatialUnit farthestSU = null;
-            Double maxDistanceSquared = 0.00;
-
-            foreach (SpatialUnit SU in visibleSUS) { 
-                if (testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d) > maxDistanceSquared) {
-                    maxDistanceSquared = testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d);
-                    farthestSU = SU;   
-                }
-            }
-
-            foreach (SpatialUnit SU in visibleSUS) {
-                if (testSU.Gen_Point3d.DistanceToSquared(SU.Gen_Point3d) == maxDistanceSquared) {
-                    result.Add(SU);
-                }
-            }
-
-            return result;
-        }
-
-
-
-        public static double CalculatePercentage(HashSet<SpatialUnit> visibleSUs, List<SpatialUnit> allSUs) {
-            int trueCount = visibleSUs.Count + 1;
-            int totalCount = allSUs.Count;
-            var tmp = (trueCount / (double)totalCount) * 100;
-            return Math.Ceiling(tmp);
-        }
-
-
-        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts, List<GeometryBase>obstacles) {
-
-            Sphere xSphere = new Sphere(SU.Gen_Point3d, Math.Sqrt(SU.Gen_Area) / 2);
-            Brep targetSphere = xSphere.ToBrep();
-            //connections = new List <LineCurve>();
-            int throughtVision = 0;
-            Curve[] overlapCurves;
-            Point3d[] brepIntersectPoints1;
-            Point3d[] brepIntersectPoints;
-
-            for (int j = 0; j < visiblePts.Count; j++) {
-                for (int i = j + 1; i < visiblePts.Count; i++) {
-                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);   
-
-                    foreach (Brep obstacle in obstacles) {
-                        var obstacleIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
-                        if (brepIntersectPoints1.Count() == 0) {
-                            var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
-                            if (brepIntersectPoints.Count() > 1) {
-                                throughtVision++;
-                                //connections.Add(connection);
-                            }
-                        }
-                    }
-                }
-            }
-            return throughtVision;
-        }
-
 
 
         public List<string> AggregateProperties(SpatialUnit testSU) {
@@ -337,13 +269,14 @@ namespace IsovistTest {
                     var listSUID = propertyValueList.Select(SU => SU.SUID);
                     propertyValue = string.Join(", ", listSUID);
                 }
+
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
 
-                else  propertyValue = $"{property.GetValue(testSU)}";
+                else propertyValue = $"{property.GetValue(testSU)}";
 
                 string propString = $"{property.Name} : {propertyValue} ";
 
-                if (propString.Contains("Connectivity") || propString.Contains("SUID")) {
+                if (propString.Contains("Model") || propString.Contains("SUID")) {
 
                     result.Add(propString);
                 }
@@ -378,7 +311,7 @@ namespace IsovistTest {
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("CF1B8304-B8E9-4103-AFA2-B0E1EF1CF5BC");
+        public override Guid ComponentGuid => new Guid("137E17C9-46D4-4D05-8C45-47DE8B81319C");
 
     }
 }
