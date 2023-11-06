@@ -60,7 +60,7 @@ namespace IsovistTest {
             // Output parameters do not have default values, but they too must have the correct access type.
 
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Floot to floor", "FF", "Floor to floor height", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Floor Height", "FH", "Floor height", GH_ParamAccess.item);
             pManager.AddNumberParameter("Distance to structure", "DS", "Distance to closest structural element", GH_ParamAccess.item);
             pManager.AddNumberParameter("Distance to Envelope", "DE", "Distence to closest envelope element", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
@@ -151,9 +151,9 @@ namespace IsovistTest {
             List<GeometryBase> obstacles = new List<GeometryBase>(structureObstacles);
             obstacles.AddRange(envelopeObstacles);
 
-            double floorHeight = ComputeFloorToFloorDistance(testSU, obstacles);
-            double disToStructure = 0.00;
-            double disToEnvelope = 0.00;
+            double floorHeight = ComputeFloorToCeilingDistance(testSU, obstacles);
+            double disToStructure = FindDistanceToClosestGeometry(testSU.Gen_Point3d, structureObstacles);
+            double disToEnvelope = FindDistanceToClosestGeometry(testSU.Gen_Point3d, envelopeObstacles);
 
             testSU.Model_FloorHeight = floorHeight;
             testSU.Model_DistanceToStructure = disToStructure;
@@ -171,7 +171,7 @@ namespace IsovistTest {
 
 
         /// .........................COMPUTE FLOOR TO FLOOR HEIGHT................................
-        public double ComputeFloorToFloorDistance (SpatialUnit SU, List<GeometryBase> obstacles) {
+        public double ComputeFloorToCeilingDistance (SpatialUnit SU, List<GeometryBase> obstacles) {
             double floorHeight = 0.00;
             Vector3d downVector = new Vector3d(0, 0, -1);
             Vector3d upVector   = new Vector3d(0, 0,  1);
@@ -210,43 +210,30 @@ namespace IsovistTest {
             return floorHeight;
         }
 
-
-        /// .........................COMPUTE INTERSECTIONS AND INTERSECTION POINTS................................
-
-        public HashSet<SpatialUnit> ComputeConnectivity(SpatialUnit testSU, List<SpatialUnit> targetSUs, List<GeometryBase> obstacles, out HashSet<SpatialUnit> visibleSUs,
-                                                         out List<Point3d> intersectionPoints) {
-
-            visibleSUs = new HashSet<SpatialUnit>();
-            intersectionPoints = new List<Point3d>();
-            foreach (SpatialUnit targetSU in targetSUs) {
-                if (testSU.Gen_Point3d != targetSU.Gen_Point3d) {
-
-                    Point3d theClosestPoint = targetSU.Gen_Point3d;
-                    Line raytmp = new Rhino.Geometry.Line(testSU.Gen_Point3d, targetSU.Gen_Point3d);
-                    Curve ray = raytmp.ToNurbsCurve();
-                    List<Point3d> obstacleIntersectPoints = new List<Point3d>();
-
-                    foreach (Brep obstacle in obstacles) {
-                        Curve[] overlapCurves;
-                        Point3d[] brepIntersectPoints;
-
-                        var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
-                        if (brepIntersectPoints.Count() > 0) {
-                            obstacleIntersectPoints.AddRange(brepIntersectPoints);
-                            Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testSU.Gen_Point3d);
-                            if (testSU.Gen_Point3d.DistanceToSquared(currClosestPoint) < testSU.Gen_Point3d.DistanceToSquared(theClosestPoint)) {
-                                theClosestPoint = currClosestPoint;
-                                intersectionPoints.Add(theClosestPoint);
-                            }
-                        }
-                    }
-
-                    if (obstacleIntersectPoints.Count() == 0) visibleSUs.Add(targetSU);
-                }
-
+        public double FindDistanceToClosestGeometry(Point3d testPoint, List<GeometryBase> obstacles) {
+           
+            if (obstacles == null || obstacles.Count == 0) {
+                // Handle the case when the list of geometries is empty
+                return double.NaN;
             }
-            return visibleSUs;
+            double minDistance = double.MaxValue;
+
+            foreach (Brep geometry in obstacles) {
+                Point3d closestPoint = geometry.ClosestPoint(testPoint);
+                if (closestPoint != Point3d.Unset) { 
+                    double distance = testPoint.DistanceTo(closestPoint);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                    }
+                }
+            }
+
+            return minDistance;
         }
+
+
+
+        
 
 
 
