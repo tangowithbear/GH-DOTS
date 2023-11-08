@@ -22,7 +22,7 @@ namespace IsovistTest {
 
         /// ...........................MODEL...........................
 
-        public double?  Model_FloorHeight        { get; set; }
+        public double?  Model_FloorHeight           { get; set; }
         public double?  Model_DistanceToStructure   { get; set; }
         public double?  Model_DistancetToEnvelope   { get; set; }
 
@@ -33,6 +33,8 @@ namespace IsovistTest {
         // public Brep[]  Isovist_Ext_Isovist                { get; set; }
         public int?     Isovist_Radius                      { get; set; }
         public Curve    Isovist_Ext_PerimeterCurve          { get; set; }
+        public double?  Isovist_Ext_MinVista                { get; set; }
+        public double?  Isovist_Ext_MaxVista                { get; set; }
         public double?  Isovist_Ext_Area                    { get; set; }
         public double?  Isovist_Ext_Perimeter               { get; set; }
         public double?  Isovist_Ext_Compactness             { get; set; }
@@ -40,6 +42,8 @@ namespace IsovistTest {
 
        // public Brep[]  Isovist_Int_Isovist                { get; set; }
         public Curve    Isovist_Int_PerimeterCurve          { get; set; }
+        public double?  Isovist_Int_MinVista                { get; set; }
+        public double?  Isovist_Int_MaxVista                { get; set; }
         public Point3d  Isovist_Int_CentreOfGravity         { get; set; }
         public double?  Isovist_Int_Area                    { get; set; }
         public double?  Isovist_Int_Perimeter               { get; set; }
@@ -105,6 +109,10 @@ namespace IsovistTest {
             this.Gen_Y = point3d.Y;
             this.Gen_Z = point3d.Z;
 
+            this.Model_FloorHeight = null;
+            this.Model_DistanceToStructure = null;
+            this.Model_DistancetToEnvelope = null;
+
             this.Isovist_Int_MajorAxisOrientation = null;
             this.Isovist_Int_MinorAxisOrientation = null;
             this.Isovist_Int_MajorAxisLength = null;
@@ -127,11 +135,15 @@ namespace IsovistTest {
             this.ViewAccessOrientation_Ext_SouthScore = null;
             this.ViewAccessOrientation_Ext_SouthEastScore = null;
 
+
+            this.Isovist_Radius = 1000;
             this.Isovist_Ext_Area = null;
             this.Isovist_Ext_Compactness = null;
             this.Isovist_Ext_Occlusivity = null;
             this.Isovist_Ext_Perimeter = null;
             this.Isovist_Ext_PerimeterCurve = null;
+            this.Isovist_Ext_MaxVista = null;
+            this.Isovist_Ext_MinVista = null;
             this.Isovist_Int_Area = null;
             this.Isovist_Int_CentreOfGravity = Point3d.Unset;
             this.Isovist_Int_Compactness = null;
@@ -141,6 +153,8 @@ namespace IsovistTest {
             this.Isovist_Int_Occlusivity = null;
             this.Isovist_Int_Perimeter = null;
             this.Isovist_Int_PerimeterCurve = null;
+            this.Isovist_Int_MaxVista = null;
+            this.Isovist_Int_MinVista = null;
 
             this.Visibility_Percentage = null;
 

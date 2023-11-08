@@ -190,6 +190,9 @@ namespace IsovistTest {
 
             Vector3d drift = IsovistDrift(testSU, intGravityCentre, out double driftMagnitude, out int driftAngle);
 
+            ComputeMaxMinVista(testSU, interiorPerimeterPoints, out double intMinVista, out double intMaxVista);
+            ComputeMaxMinVista(testSU, exteriorPerimeterPoints, out double extMinVista, out double extMaxVista);
+
 
             // Finally assign the values to the properties.
             testSU.Isovist_Radius = radius;
@@ -198,6 +201,9 @@ namespace IsovistTest {
             testSU.Isovist_Ext_Area  = exteriorIsovistArea;
             testSU.Isovist_Ext_Perimeter = exteriorPerimeter.GetLength();
             testSU.Isovist_Ext_Compactness = extCompactness;
+            testSU.Isovist_Ext_MinVista = extMinVista;
+            testSU.Isovist_Ext_MaxVista = extMaxVista;
+
             //testSU.Isovist_Int_Isovist = interiorIsoVist;
             testSU.Isovist_Int_PerimeterCurve = interiorPerimeter;
             testSU.Isovist_Int_Area = interiorIsovistArea;
@@ -205,6 +211,8 @@ namespace IsovistTest {
             testSU.Isovist_Int_CentreOfGravity = intGravityCentre;
             testSU.Isovist_Int_NumberOfVertices = vertices.Count;
             testSU.Isovist_Int_Compactness = intCompactness;
+            testSU.Isovist_Int_MinVista = intMinVista;
+            testSU.Isovist_Int_MaxVista = extMaxVista;
             testSU.Isovist_Int_DriftMagnitude = driftMagnitude;
             testSU.Isovist_Int_DriftDirection = driftAngle;
 
@@ -283,6 +291,26 @@ namespace IsovistTest {
             extIntersectionPoints.Add(theClosestPoint);
             }
             return extIntersectionPoints;
+        }
+
+
+
+        /// .........................COMPUTE LONGEST END SHORTEST VISTA
+
+
+        public void ComputeMaxMinVista (SpatialUnit SU , List<Point3d> intersectionPoints, out double minVista, out double maxVista) {
+            minVista = (double)SU.Isovist_Radius;
+            maxVista = 0.0;
+
+            double minVistaSquared = minVista * minVista;
+            double maxVistaSquared = maxVista * maxVista;
+
+            foreach (Point3d Pt in intersectionPoints) {
+                if (SU.Gen_Point3d.DistanceToSquared(Pt) > maxVistaSquared) maxVistaSquared = SU.Gen_Point3d.DistanceToSquared(Pt); 
+                if (SU.Gen_Point3d.DistanceToSquared(Pt) < minVistaSquared) minVistaSquared = SU.Gen_Point3d.DistanceToSquared(Pt);
+            }
+            minVista = Math.Sqrt(minVistaSquared);
+            maxVista = Math.Sqrt(maxVistaSquared);  
         }
 
 
@@ -386,6 +414,8 @@ namespace IsovistTest {
             foreach (var property in props)
             {
 
+                if (property.GetValue(testSU) == null)
+                    continue;
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
