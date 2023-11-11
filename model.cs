@@ -60,6 +60,7 @@ namespace IsovistTest {
             // Output parameters do not have default values, but they too must have the correct access type.
 
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Height", "H", "Distance from floor", GH_ParamAccess.item);
             pManager.AddNumberParameter("Floor Height", "FH", "Floor height", GH_ParamAccess.item);
             pManager.AddNumberParameter("Distance to structure", "DS", "Distance to closest structural element", GH_ParamAccess.item);
             pManager.AddNumberParameter("Distance to Envelope", "DE", "Distence to closest envelope element", GH_ParamAccess.item);
@@ -151,10 +152,11 @@ namespace IsovistTest {
             List<GeometryBase> obstacles = new List<GeometryBase>(structureObstacles);
             obstacles.AddRange(envelopeObstacles);
 
-            double floorHeight = ComputeFloorToCeilingDistance(testSU, obstacles);
+            double floorHeight = ComputeFloorToCeilingDistance(testSU, obstacles, out double height);
             double disToStructure = FindDistanceToClosestGeometry(testSU.Gen_Point3d, structureObstacles);
             double disToEnvelope = FindDistanceToClosestGeometry(testSU.Gen_Point3d, envelopeObstacles);
 
+            testSU.Model_Height = height;
             testSU.Model_FloorHeight = floorHeight;
             testSU.Model_DistanceToStructure = disToStructure;
             testSU.Model_DistancetToEnvelope = disToEnvelope;
@@ -162,17 +164,19 @@ namespace IsovistTest {
             List<string> data = AggregateProperties(testSU);
 
             DA.SetData(0, testPoint);
-            DA.SetData(1, floorHeight);
-            DA.SetData(2, disToStructure);
-            DA.SetData(3, disToEnvelope);
-            DA.SetDataList(4, data);
+            DA.SetData(1, height);
+            DA.SetData(2, floorHeight);
+            DA.SetData(3, disToStructure);
+            DA.SetData(4, disToEnvelope);
+            DA.SetDataList(5, data);
         }
 
 
 
         /// .........................COMPUTE FLOOR TO FLOOR HEIGHT................................
-        public double ComputeFloorToCeilingDistance (SpatialUnit SU, List<GeometryBase> obstacles) {
+        public double ComputeFloorToCeilingDistance (SpatialUnit SU, List<GeometryBase> obstacles, out double height) {
             double floorHeight = 0.00;
+            height = 0.00;
             Vector3d downVector = new Vector3d(0, 0, -1);
             Vector3d upVector   = new Vector3d(0, 0,  1);
 
@@ -190,6 +194,7 @@ namespace IsovistTest {
                 }
             }
 
+            height = SU.Gen_Point3d.DistanceTo(floorPoint);
 
             Ray3d rayUp = new Ray3d(floorPoint, upVector);
             Point3d[] upIntersectionPoints = Intersection.RayShoot(rayUp, obstacles, 1);

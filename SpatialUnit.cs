@@ -22,6 +22,7 @@ namespace IsovistTest {
 
         /// ...........................MODEL...........................
 
+        public double?  Model_Height                { get; set; }
         public double?  Model_FloorHeight           { get; set; }
         public double?  Model_DistanceToStructure   { get; set; }
         public double?  Model_DistancetToEnvelope   { get; set; }
@@ -109,6 +110,7 @@ namespace IsovistTest {
             this.Gen_Y = point3d.Y;
             this.Gen_Z = point3d.Z;
 
+            this.Model_Height = null;
             this.Model_FloorHeight = null;
             this.Model_DistanceToStructure = null;
             this.Model_DistancetToEnvelope = null;
