@@ -135,7 +135,7 @@ namespace IsovistTest {
             }
 
             //object tiutout = null;
-            //if (tiutout is Gen_Point3d point3d) {
+            //if (tiutout is Point3d point3d) {
             //}
 
             //else {

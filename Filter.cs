@@ -40,7 +40,7 @@ namespace IsovistTest {
             pManager.AddIntegerParameter("Name Predicate", "NP",   "Property name condition, default 'is' ",    GH_ParamAccess.item);
             pManager.AddTextParameter   ("Name Subject",   "N",    "Property Name subject as text",             GH_ParamAccess.item);
             pManager.AddIntegerParameter("Value Predicate","VP",   "Propery value contidion, default 'equals'", GH_ParamAccess.item);
-            pManager.AddTextParameter   ("Value Subject",  "V",    "Value as number or text, default 0",        GH_ParamAccess.item); 
+            pManager.AddGenericParameter("Value Subject",  "V",    "Value as number or text, default 0",        GH_ParamAccess.item); 
 
 
             //Param_Integer param = pManager[3] as Param_Integer;
@@ -59,6 +59,9 @@ namespace IsovistTest {
             valuePredicate.AddNamedValue("greater than or equal", 2);
             valuePredicate.AddNamedValue("less than", 3);
 
+
+
+            //string nick = nameSubject.NickName;
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -79,12 +82,7 @@ namespace IsovistTest {
             pManager.AddNumberParameter("Number", "N", "Number of tested spatial units that meets the filtering condition", GH_ParamAccess.item);
             pManager.AddTextParameter("Selected Properties", "P", "Properties that met the Name condition", GH_ParamAccess.list);
             pManager.AddTextParameter("Property Values", "V", "A list of values for the selected property for the tested spatial units that meets the filtering condition", GH_ParamAccess.list);
- 
-            //                                  HOW TO OUT PUT A TEXT/JSON/DICTIONARY?  
 
-            // Sometimes you want to hide a specific parameter from the Rhino preview.
-            // You can use the HideParameter() method as a quick way:
-            //pManager.HideParameter(0);
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace IsovistTest {
             int namePredicate   = 0;
             string nameSubject  = null;
             int valuePredicate  = 0;
-            object valueSubject = null;
+            IGH_Goo valueSubject = null; 
 
             //object tiutout = null;
             //if (tiutout is Gen_Point3d point3d) {
@@ -155,11 +153,8 @@ namespace IsovistTest {
             //object ob = null;
             //DA.GetData(1, ref ob);
 
-            //var nameSubject = Params.Input[1].Sources[0];
-            // string nick = nameSubject.NickName;
-
-            // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
-            // The actual functionality will be in a different method:
+            //valueSubject = Params.Input[5].Sources[0];
+            //string nick = nameSubject.NickName;
 
 
 
@@ -189,7 +184,7 @@ namespace IsovistTest {
 
             List<string> data = new List<string>();
 
-            foreach ( SpatialUnit SU in allSUs) {
+            foreach ( SpatialUnit SU in filteredSU2) {
                 data = AggregateProperties(SU);
             }
 
@@ -198,7 +193,7 @@ namespace IsovistTest {
             DA.SetDataList(1, FSUtestPoints);
             DA.SetData(2, percentage);
             DA.SetData(3, number);
-            DA.SetDataList(4, targetProperties);
+            DA.SetDataList(4, targetPropertyNames);
             DA.SetDataList(5, data);
         }
 
@@ -256,59 +251,60 @@ namespace IsovistTest {
         }
 
 
-        public List<SpatialUnit> FilterSpatialUnits(List<SpatialUnit> allSUs, string targetPropertyName, object valueSubject, int valuePredicate) {
+        public List<SpatialUnit> FilterSpatialUnits(List<SpatialUnit> allSUs, string targetPropertyName, IGH_Goo valueSubject, int valuePredicate) {
            
             List<SpatialUnit> filteredSU = new List<SpatialUnit>();
 
-            double result;
-            if (double.TryParse(valueSubject.ToString(), out result)) {
 
-                double valueSubjectDouble = result;
+            if (valueSubject is GH_Number value)  {
 
+                double valueSubjectDouble = value.Value;
+
+                foreach (SpatialUnit SU in allSUs) {
+                    var propertyInfo = SU.GetType().GetProperty(targetPropertyName);
+
+                    object propertyValue = propertyInfo.GetValue(SU);
+                    if (propertyValue != null) {
+                        double PropertyValueDouble = Math.Round((double)propertyValue, 2);
+
+                        if ((valuePredicate == 0) && (Math.Abs(PropertyValueDouble - valueSubjectDouble) <= 0.001)) filteredSU.Add(SU);
+                        if ((valuePredicate == 1) && (Math.Abs(PropertyValueDouble - valueSubjectDouble) > 0.001)) filteredSU.Add(SU);
+                        if ((valuePredicate == 2) && (PropertyValueDouble >= valueSubjectDouble)) filteredSU.Add(SU);
+                        if ((valuePredicate == 3) && (PropertyValueDouble < valueSubjectDouble)) filteredSU.Add(SU);
+                    }
+                }
+            }
+
+
+            if (valueSubject is GH_String stringValue){
+                string valueSubjectString = stringValue.Value;
+
+                foreach (SpatialUnit SU in allSUs) {
+                var propertyInfo = SU.GetType().GetProperty(targetPropertyName);
+                object propertyValue = propertyInfo.GetValue(SU);
+                 
+                    if (propertyValue is string) {
+                        if ((valuePredicate == 0) && ((string)propertyValue == valueSubjectString)) filteredSU.Add(SU);
+                        if ((valuePredicate == 1) && ((string)propertyValue != valueSubjectString)) filteredSU.Add(SU);
+                        if ((valuePredicate == 2) || (valuePredicate == 3)) continue;
+                    }
+                }
+            }
+
+            if (valueSubject == null) {
                 foreach (SpatialUnit SU in allSUs) {
                     var propertyInfo = SU.GetType().GetProperty(targetPropertyName);
                     object propertyValue = propertyInfo.GetValue(SU);
 
-                    double doublePropertyValue;
-                    if (propertyValue is int) {
-                        doublePropertyValue = (int)propertyValue;
-                    } else if (propertyValue is double) {
-                        doublePropertyValue = (double)propertyValue;
-                    } else {
-                        continue;
+                    if (propertyValue == null) {
+                        filteredSU.Add(SU);
                     }
-
-                    if ((valuePredicate == 0) && (doublePropertyValue == valueSubjectDouble)) filteredSU.Add(SU);
-                    if ((valuePredicate == 1) && (doublePropertyValue != valueSubjectDouble)) filteredSU.Add(SU);
-                    if ((valuePredicate == 2) && (doublePropertyValue >= valueSubjectDouble)) filteredSU.Add(SU);
-                    if ((valuePredicate == 3) && (doublePropertyValue < valueSubjectDouble)) filteredSU.Add(SU);
-
-
-                    //if (!(propertyValue is List<Gen_Point3d>) && !(propertyValue is HashSet<SpatialUnit>)) {
-
-                    //    if ((valuePredicate == 0) && ((double)propertyValue == valueSubjectDouble)) filteredSU.Add(SU);
-                    //    if ((valuePredicate == 1) && ((double)propertyValue != valueSubjectDouble)) filteredSU.Add(SU);
-                    //    if ((valuePredicate == 2) && ((double)propertyValue >= valueSubjectDouble)) filteredSU.Add(SU);
-                    //    if ((valuePredicate == 3) && ((double)propertyValue < valueSubjectDouble)) filteredSU.Add(SU);
-                    //}
                 }
             }
 
 
 
-            string valueSubjectString = valueSubject.ToString();
-
-            foreach (SpatialUnit SU in allSUs) {
-                var propertyInfo = SU.GetType().GetProperty(targetPropertyName);
-                object propertyValue = propertyInfo.GetValue(SU);
-
-                if (!(propertyValue is List<Point3d>) && !(propertyValue is HashSet<SpatialUnit>)) {
-
-                    if ((valuePredicate == 0) && ((string)propertyValue == valueSubjectString)) filteredSU.Add(SU);
-                }
-            }
-
-            return filteredSU;
+                return filteredSU;
         }
 
 
