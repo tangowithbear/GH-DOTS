@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace IsovistTest
+namespace ISM
 {
     /*internal class Main
     {

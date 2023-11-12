@@ -12,7 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace IsovistTest {
+namespace ISM {
     public class GenerateSUtestcomponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 

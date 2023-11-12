@@ -3,9 +3,9 @@ using Grasshopper.Kernel;
 using System;
 using System.Drawing;
 
-namespace IsovistTest {
+namespace ISM {
     public class IsovistTestInfo : GH_AssemblyInfo {
-        public override string Name => "IsovistTest";
+        public override string Name => "ISM";
 
         //Return a 24x24 pixel bitmap to represent this GHA library.
         public override Bitmap Icon => null;
