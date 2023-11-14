@@ -287,7 +287,7 @@ namespace ISM {
         }
 
 
-        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts, List<GeometryBase>obstacles) {
+        public static int CalculateThroughtVision(SpatialUnit SU, List<Point3d> visiblePts, List<GeometryBase> obstacles) {
 
             Sphere xSphere = new Sphere(SU.Gen_Point3d, Math.Sqrt(SU.Gen_Area) / 2);
             Brep targetSphere = xSphere.ToBrep();
@@ -299,17 +299,24 @@ namespace ISM {
 
             for (int j = 0; j < visiblePts.Count; j++) {
                 for (int i = j + 1; i < visiblePts.Count; i++) {
-                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);   
+                    LineCurve connection = new LineCurve(visiblePts[j], visiblePts[i]);
 
+                    bool intersectedWithObstacles = false;
                     foreach (Brep obstacle in obstacles) {
-                        var obstacleIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
-                        if (brepIntersectPoints1.Count() == 0) {
-                            var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
-                            if (brepIntersectPoints.Count() > 1) {
-                                throughtVision++;
-                                //connections.Add(connection);
-                            }
+                        Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
+                        if (brepIntersectPoints1.Count() > 0) {
+                            intersectedWithObstacles = true;
+                            break;
                         }
+                    }
+                    if (intersectedWithObstacles) {
+                        continue;
+                    }
+
+                    Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
+                    if (brepIntersectPoints.Count() > 1) {
+                        throughtVision++;
+                        //connections.Add(connection);
                     }
                 }
             }
