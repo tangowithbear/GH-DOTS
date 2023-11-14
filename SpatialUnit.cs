@@ -59,14 +59,14 @@ namespace ISM {
         public double? Isovist_Int_MinorAxisLength           { get; set; }
         public double? Isovist_Int_MinorAxisOrientation      { get; set; }
 
-        public int? ViewAccessOrientation_Ext_EastScore      { get; set; }
-        public int? ViewAccessOrientation_Ext_NordEastScore  { get; set; }
-        public int? ViewAccessOrientation_Ext_NordScore      { get; set; }
-        public int? ViewAccessOrientation_Ext_NordWestScore  { get; set; }
-        public int? ViewAccessOrientation_Ext_WestScore      { get; set; }
-        public int? ViewAccessOrientation_Ext_SouthWestScore { get; set; }
-        public int? ViewAccessOrientation_Ext_SouthScore     { get; set; }
-        public int? ViewAccessOrientation_Ext_SouthEastScore { get; set; }
+        public int? ViewAccess_Ext_EastScore      { get; set; }
+        public int? ViewAccess_Ext_NordEastScore  { get; set; }
+        public int? ViewAccess_Ext_NordScore      { get; set; }
+        public int? ViewAccess_Ext_NordWestScore  { get; set; }
+        public int? ViewAccess_Ext_WestScore      { get; set; }
+        public int? ViewAccess_Ext_SouthWestScore { get; set; }
+        public int? ViewAccess_Ext_SouthScore     { get; set; }
+        public int? ViewAccess_Ext_SouthEastScore { get; set; }
 
 
 
@@ -128,14 +128,14 @@ namespace ISM {
             this.Connectivity_NumberOfVisibleSUs = null;
             this.Connectivity_ThroughVision = null;
 
-            this.ViewAccessOrientation_Ext_EastScore = null;
-            this.ViewAccessOrientation_Ext_NordEastScore = null;
-            this.ViewAccessOrientation_Ext_NordScore = null;
-            this.ViewAccessOrientation_Ext_NordWestScore = null;
-            this.ViewAccessOrientation_Ext_WestScore = null;
-            this.ViewAccessOrientation_Ext_SouthWestScore = null;
-            this.ViewAccessOrientation_Ext_SouthScore = null;
-            this.ViewAccessOrientation_Ext_SouthEastScore = null;
+            this.ViewAccess_Ext_EastScore = null;
+            this.ViewAccess_Ext_NordEastScore = null;
+            this.ViewAccess_Ext_NordScore = null;
+            this.ViewAccess_Ext_NordWestScore = null;
+            this.ViewAccess_Ext_WestScore = null;
+            this.ViewAccess_Ext_SouthWestScore = null;
+            this.ViewAccess_Ext_SouthScore = null;
+            this.ViewAccess_Ext_SouthEastScore = null;
 
 
             this.Isovist_Radius = 1000;

@@ -226,7 +226,7 @@ namespace ISM {
                 else if (property.GetValue(testSU) == null)
                     continue;
 
-                else if (property.Name == "Isovist_Int_CentreOfGravity")
+                else if ((property.Name == "Isovist_Int_CentreOfGravity") || (property.Name == "Isovist_Radius")) 
                     continue;
 
                 else propertyValue = $"{property.GetValue(testSU)}";

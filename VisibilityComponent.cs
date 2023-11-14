@@ -56,8 +56,8 @@ namespace ISM {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("Landmark Sensor Points", "SP", "End points of the rays", GH_ParamAccess.item);
-            pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
-            pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
+            //pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
+            //pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
             pManager.AddBooleanParameter("Results", "R", "True of Target point is visible, otherwise false ", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item );
@@ -165,9 +165,9 @@ namespace ISM {
 
             List<bool> visibility = ContainsBonus(testPoint, obstacles, bonusViewGeometry, out List<Point3d> targetPoints);
             List<Curve> rays = ComputeRays(testPoint, targetPoints);
-            List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, obstacles);
-            List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, interiorObstacles);
-            List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, exteriorObstacles);
+            //List<Point3d> allIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, obstacles);
+            //List<Point3d> interiorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, interiorObstacles);
+            //List<Point3d> exteriorIntersectionPoints = ComputeIntersectionPoints(testPoint, targetPoints, rays, exteriorObstacles);
             double percentage = CalculatePercentage(visibility);
             bool isThresholdPassed = IsThresholdPassed(threshold, percentage);
 
@@ -178,12 +178,12 @@ namespace ISM {
             List<string> data = AggregateProperties(testSU);
 
             DA.SetDataList(0, targetPoints);
-            DA.SetDataList(1, interiorIntersectionPoints);
-            DA.SetDataList(2, exteriorIntersectionPoints); ;
-            DA.SetDataList(3, visibility);
-            DA.SetData(4, percentage);
-            DA.SetData(5, isThresholdPassed);
-            DA.SetDataList(6, data);
+            //DA.SetDataList(1, interiorIntersectionPoints);
+            //DA.SetDataList(2, exteriorIntersectionPoints); ;
+            DA.SetDataList(1, visibility);
+            DA.SetData(2, percentage);
+            DA.SetData(3, isThresholdPassed);
+            DA.SetDataList(4, data);
         }
 
 

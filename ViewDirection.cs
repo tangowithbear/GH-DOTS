@@ -13,7 +13,7 @@ using System.Net;
 using System.Reflection;
 
 namespace ISM {
-    public class OrientationComponent : GH_Component {
+    public class ViewAccessComponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -21,8 +21,8 @@ namespace ISM {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public OrientationComponent()
-          : base("Orient", "ViewAccesOrientation",
+        public ViewAccessComponent()
+          : base("ViewAccess", "ViewAccess",
             "Analyse the orientation of the isovist",
             "IndoorSpaceManager", "Vision") {
         }
@@ -128,14 +128,14 @@ namespace ISM {
                                             out int west, out int southWest, out int south, out int southEast);
 
 
-            testSU.ViewAccessOrientation_Ext_EastScore =      east;
-            testSU.ViewAccessOrientation_Ext_NordEastScore =  nordEast;
-            testSU.ViewAccessOrientation_Ext_NordScore =      nord;
-            testSU.ViewAccessOrientation_Ext_NordWestScore =  nordWest;
-            testSU.ViewAccessOrientation_Ext_WestScore =      west;
-            testSU.ViewAccessOrientation_Ext_SouthWestScore = southWest;
-            testSU.ViewAccessOrientation_Ext_SouthScore =     south;
-            testSU.ViewAccessOrientation_Ext_SouthEastScore = southEast;
+            testSU.ViewAccess_Ext_EastScore =      east;
+            testSU.ViewAccess_Ext_NordEastScore =  nordEast;
+            testSU.ViewAccess_Ext_NordScore =      nord;
+            testSU.ViewAccess_Ext_NordWestScore =  nordWest;
+            testSU.ViewAccess_Ext_WestScore =      west;
+            testSU.ViewAccess_Ext_SouthWestScore = southWest;
+            testSU.ViewAccess_Ext_SouthScore =     south;
+            testSU.ViewAccess_Ext_SouthEastScore = southEast;
 
 
             List<string> data = AggregateProperties(testSU);
@@ -210,7 +210,7 @@ namespace ISM {
                 //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
                 string propString = $"{property.Name} : {property.GetValue(testSU)}";
 
-                if (propString.Contains("Orientation") || propString.Contains("SUID")) {
+                if (propString.Contains("ViewAccess") || propString.Contains("SUID")) {
 
                     result.Add(propString);
                 }

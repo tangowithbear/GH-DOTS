@@ -212,7 +212,7 @@ namespace ISM {
             testSU.Isovist_Int_NumberOfVertices = vertices.Count;
             testSU.Isovist_Int_Compactness = intCompactness;
             testSU.Isovist_Int_MinVista = intMinVista;
-            testSU.Isovist_Int_MaxVista = extMaxVista;
+            testSU.Isovist_Int_MaxVista = intMaxVista;
             testSU.Isovist_Int_DriftMagnitude = driftMagnitude;
             testSU.Isovist_Int_DriftDirection = driftAngle;
 
