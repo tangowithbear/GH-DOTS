@@ -56,8 +56,8 @@ namespace ISM {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             pManager.AddPointParameter("Landmark Sensor Points", "SP", "End points of the rays", GH_ParamAccess.item);
-            //pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles", GH_ParamAccess.list);
-            //pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles", GH_ParamAccess.list);
+           // pManager.AddPointParameter("Interior intersection Points", "IEP", "Intersections points with interieor obstacles",    GH_ParamAccess.list);
+           // pManager.AddPointParameter("Exterior intersection Points", "EIP", "Intersections points witn exterior obstacles",     GH_ParamAccess.list);
             pManager.AddBooleanParameter("Results", "R", "True of Target point is visible, otherwise false ", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
             pManager.AddBooleanParameter("IsVisible", "V", "Returns True if pass the threshold", GH_ParamAccess.item );
@@ -179,7 +179,7 @@ namespace ISM {
 
             DA.SetDataList(0, targetPoints);
             //DA.SetDataList(1, interiorIntersectionPoints);
-            //DA.SetDataList(2, exteriorIntersectionPoints); ;
+            //DA.SetDataList(2, exteriorIntersectionPoints); 
             DA.SetDataList(1, visibility);
             DA.SetData(2, percentage);
             DA.SetData(3, isThresholdPassed);
@@ -243,30 +243,29 @@ namespace ISM {
             Point3d[] curveTargetPoints = new Point3d[21];
             foreach (Curve contourCurve in brepContourCurves) {
                 contourCurve.DivideByCount(20, false, out curveTargetPoints);
-                foreach (Point3d curveTargetPoint in curveTargetPoints) {
-                    targetPoints.Add(curveTargetPoint);
-                }
+                targetPoints.AddRange(curveTargetPoints);
             }
 
             List<bool> visibility = new List<bool>();
             List<Curve> rays = ComputeRays(testPoint, targetPoints);
+            Curve[] overlapCurves;
+            Point3d[] obstaclesIntersectPoints;
+            Curve[] bonusSelfOverlapCurves;
+            Point3d[] bonusSelfIntersectPoints;
             foreach (Curve ray in rays) {
                 bool isVisible = true;
-                foreach (Brep obstacle in obstacles) {
-                    Curve[] overlapCurves;
-                    Point3d[] obstaclesIntersectPoints;
+                var bonusIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, bonusGeometry, 0.0, out bonusSelfOverlapCurves, out bonusSelfIntersectPoints);
+                if (bonusSelfIntersectPoints.Count() > 1) {
+                    isVisible = false;
+                } else {
+                    foreach (Brep obstacle in obstacles) {
+                        var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out obstaclesIntersectPoints);
+                        if (obstaclesIntersectPoints.Count() > 0) {
+                            isVisible = false;
+                            break;
+                        }
 
-                    Curve[] bonusSelfOverlapCurves;
-                    Point3d[] bonusSelfIntersectPoints;
-
-                    var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out obstaclesIntersectPoints);
-                    var bonusIntersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, bonusGeometry, 0.0, out bonusSelfOverlapCurves, out bonusSelfIntersectPoints);
-                    if (obstaclesIntersectPoints.Count() > 0 || bonusSelfIntersectPoints.Count() > 1 ) 
-                    {
-                        isVisible = false;
-                        break;
                     }
-
                 }
                 visibility.Add(isVisible);
             }
