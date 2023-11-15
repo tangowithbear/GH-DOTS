@@ -128,14 +128,14 @@ namespace ISM {
                                             out int west, out int southWest, out int south, out int southEast);
 
 
-            testSU.ViewAccess_Ext_EastScore =      east;
-            testSU.ViewAccess_Ext_NordEastScore =  nordEast;
-            testSU.ViewAccess_Ext_NordScore =      nord;
-            testSU.ViewAccess_Ext_NordWestScore =  nordWest;
-            testSU.ViewAccess_Ext_WestScore =      west;
-            testSU.ViewAccess_Ext_SouthWestScore = southWest;
-            testSU.ViewAccess_Ext_SouthScore =     south;
-            testSU.ViewAccess_Ext_SouthEastScore = southEast;
+            testSU.ViewAccess_Ext_EastArea =      east;
+            testSU.ViewAccess_Ext_NordEastArea =  nordEast;
+            testSU.ViewAccess_Ext_NordArea =      nord;
+            testSU.ViewAccess_Ext_NordWestArea =  nordWest;
+            testSU.ViewAccess_Ext_WestArea =      west;
+            testSU.ViewAccess_Ext_SouthWestArea = southWest;
+            testSU.ViewAccess_Ext_SouthArea =     south;
+            testSU.ViewAccess_Ext_SouthEastArea = southEast;
 
 
             List<string> data = AggregateProperties(testSU);
@@ -184,17 +184,33 @@ namespace ISM {
         ///////////////////////////////// COMPUTE ONE ORIENTATION ///////////////////////////
 
         public double ComputeScore(Point3d testPoint, List<Point3d> endPoints, Curve perimeterCurve, int startAngle, int endAngle, out List<Point3d> localPerimeterPoints) {
-            double score = 0;
+            double area = 0;
             localPerimeterPoints = new List<Point3d>();
+            double vistaArea = 0;
             for (int i = startAngle; i <= endAngle; i++) {
-                LineCurve ray = new LineCurve (testPoint, endPoints[i%360]);
-                ray.ToNurbsCurve();
-                ray.ClosestPoints(perimeterCurve, out Point3d pointOnRay, out Point3d poinOnCurve);
-                score += Math.Round(testPoint.DistanceTo(pointOnRay), 1);
-                localPerimeterPoints.Add(pointOnRay);
+                LineCurve ray1 = new LineCurve (testPoint, endPoints[i%360]);
+                ray1.ToNurbsCurve();
+                ray1.ClosestPoints(perimeterCurve, out Point3d pointOnRay1, out Point3d poinOnCurve1);
+
+                LineCurve ray2 = new LineCurve(testPoint, endPoints[(i+1) % 360]);
+                ray2.ToNurbsCurve();
+                ray2.ClosestPoints(perimeterCurve, out Point3d pointOnRay2, out Point3d poinOnCurve2);
+
+                //Triangle3d vistaTriangle = new Triangle3d(testPoint,pointOnRay1, pointOnRay2);
+                //vistaTriangle.ToPolyline();
+
+                double a = testPoint.DistanceTo(pointOnRay1);
+                double b = pointOnRay1.DistanceTo(pointOnRay2);
+                double c = pointOnRay2.DistanceTo(testPoint);
+                double s = (a + b + c) / 2;
+                vistaArea = Math.Sqrt(s * (s - a) * (s - b) * (s - c));
+
+                area += Math.Round(vistaArea, 2);
+
+                localPerimeterPoints.Add(pointOnRay1);
 
             }
-            return score;
+            return area;
         }
 
 
