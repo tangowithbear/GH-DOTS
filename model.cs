@@ -81,27 +81,15 @@ namespace ISM {
         protected override void SolveInstance(IGH_DataAccess DA) {
             // First, we need to retrieve all data from the input parameters.
             // We'll start by declaring variables and assigning them starting values.
-            //Plane plane = Plane.WorldXY;
-            //double radius0 = 0.0;
-            //double radius1 = 0.0;
-            //int turns = 0;
 
 
-            Point3d testPoint = Point3d.Unset;                                   // DIFFERENCE/ POINT3D VS POINT?
-            List<GeometryBase> structureObstacles = new List<GeometryBase>();    // HOW TO ASSIGN NULL TO POINTS / GEOMETRY
+            Point3d testPoint = Point3d.Unset;                                   
+            List<GeometryBase> structureObstacles = new List<GeometryBase>();    
             List<GeometryBase> envelopeObstacles = new List<GeometryBase>();
-
-
-
 
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
-
-            //if (!DA.GetData(0, ref plane)) return;
-            //if (!DA.GetData(1, ref radius0)) return;
-            //if (!DA.GetData(2, ref radius1)) return;
-            //if (!DA.GetData(3, ref turns)) return;
 
             Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
