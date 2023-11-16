@@ -34,7 +34,7 @@ namespace ISM {
 
             pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Obstacles", "O", "Building geometry excluding the windows", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Windows", "W", "Windows", GH_ParamAccess.list);
+            pManager.AddRectangleParameter("Windows", "W", "Windows", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -45,7 +45,8 @@ namespace ISM {
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
             pManager.AddPointParameter("WindowCentroid", "WP", "Centroid of the closest window", GH_ParamAccess.item);
-            pManager.AddGeometryParameter("WindowRectangle", "WR", "Window rectangular frame", GH_ParamAccess.item);
+            pManager.AddRectangleParameter("WindowRectangle", "WR", "Window rectangular frame", GH_ParamAccess.item);
+            pManager.AddPointParameter("P", "P", "grid", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace ISM {
 
             SpatialUnit testSU = null;                             
             List<GeometryBase> obstacles = new List<GeometryBase>();    
-            List<GeometryBase> windows= new List<GeometryBase>();
+            List<Rectangle3d> windows= new List<Rectangle3d>();
 
 
             // Then we need to access the input parameters individually. 
@@ -71,7 +72,7 @@ namespace ISM {
 
             if (!DA.GetData(0, ref testSU)) return;
             if (!DA.GetDataList<GeometryBase>(1, obstacles)) return;
-            if (!DA.GetDataList<GeometryBase>(2, windows)) return;
+            if (!DA.GetDataList<Rectangle3d>(2, windows)) return;
 
 
             // We should now validate the data and warn the user if invalid data is supplied.
@@ -93,23 +94,26 @@ namespace ISM {
 
 
             Point3d testPoint = testSU.Gen_Point3d;
-            ComputeClosestWindowPoint(testSU, obstacles, windows, out Brep closestWindow, out Point3d closestWindowPoint);
+            ComputeClosestWindowPoint(testSU, obstacles, windows, out Rectangle3d closestWindow, out Point3d closestWindowPoint);
+            List<Point3d> windowGridPoints = CompouteWindowGridPoints(closestWindow, 10, 10);
 
             DA.SetData(0, testSU);
             DA.SetData(1, testSU.Gen_Point3d);
             DA.SetData(2, closestWindowPoint);
             DA.SetData(3, closestWindow);
+            DA.SetDataList(4, windowGridPoints);
         }
 
 
         /// .........................COMPUTE FLOOR TO FLOOR HEIGHT................................
-        public Point3d ComputeClosestWindowPoint(SpatialUnit SU, List<GeometryBase> obstacles, List<GeometryBase> windows, out Brep closestWindow, out Point3d closestWindowCentroid) {
+        public Point3d ComputeClosestWindowPoint(SpatialUnit SU, List<GeometryBase> obstacles, List<Rectangle3d> windows, out Rectangle3d closestWindow, out Point3d closestWindowCentroid) {
             closestWindowCentroid = new Point3d();
             double minDistanceSquared = Double.MaxValue;
-            closestWindow = new Brep();
+            closestWindow = new Rectangle3d();
 
-            foreach (Brep window in windows) {
-                Point3d windowCentroid = window.GetBoundingBox(true).PointAt(0.5, 0.5, 0.5);
+            foreach (Rectangle3d window in windows) {
+                Point3d windowCentroid = window.Center;
+                //Point3d windowCentroid = window.GetBoundingBox(true).PointAt(0.5, 0.5, 0.5); // for brep
                 if (SU.Gen_Point3d.DistanceToSquared(windowCentroid) < minDistanceSquared) {
                     LineCurve connection = new LineCurve(SU.Gen_Point3d, windowCentroid);
                     Curve[] overlapCurves;
@@ -129,6 +133,30 @@ namespace ISM {
 
             return closestWindowCentroid;
         }
+
+        /// .........................COMPUTE WINDOW GRID POINTS................................
+
+        public List<Point3d> CompouteWindowGridPoints (Rectangle3d window, double colCount, double rowCount) {
+            List<Point3d> windowGridPoints = new List<Point3d>();
+            Plane windowPlane = window.Plane;
+
+            double cellSizeU = window.Width / colCount;
+            double cellSizeV = window.Height / rowCount;
+
+            for (double u = -(cellSizeU * 4); u <= (cellSizeU * 4); u += cellSizeU) {
+                for (double v = -(cellSizeV * 4); v <= (cellSizeV * 4); v += cellSizeV) {
+                    //double u = windowPlane.OriginX + j * cellSizeX + 0.5 * cellSizeX;
+                    //double w = windowPlane.OriginY + i * cellSizeY + 0.5 * cellSizeY;
+                    //Point3d gridPoint = new Point3d(x, y, windowPlane.OriginZ);
+
+                    Point3d gridPoint = windowPlane.PointAt(u, v);
+                    windowGridPoints.Add(gridPoint);
+                }
+            }
+            return windowGridPoints;
+        }
+
+
 
 
         public override GH_Exposure Exposure => GH_Exposure.primary;
