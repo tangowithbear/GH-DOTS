@@ -63,7 +63,7 @@ namespace ISM {
             //pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
             //pManager.AddPointParameter("Target Points", "TP", "End points of the rays", GH_ParamAccess.item);
-            pManager.AddPointParameter("Intersection Points", "IP", "Intersections points with static obstacles", GH_ParamAccess.list);
+            //pManager.AddPointParameter("Intersection Points", "IP", "Intersections points with static obstacles", GH_ParamAccess.list);
             //pManager.AddPointParameter("Dynamic intersection Points", "DIP", "Intersections points witn dynamic obstacles", GH_ParamAccess.list);
             //pManager.AddBooleanParameter("results", "R", "test", GH_ParamAccess.list);
             pManager.AddNumberParameter("Percentage", "%", "Percentage of visible part of the target Geometry", GH_ParamAccess.item);
@@ -204,14 +204,14 @@ namespace ISM {
             List<string> data = AggregateProperties(testSU);
 
 
-            DA.SetDataList(0, intersectionPoints);
-            DA.SetData(1, percentage);
-            DA.SetData(2, visibleSUNumber);
-            DA.SetDataList(3, visibleSUTestPoints);
-            DA.SetData(4, throughVision);
+            //DA.SetDataList(0, intersectionPoints);
+            DA.SetData(0, percentage);
+            DA.SetData(1, visibleSUNumber);
+            DA.SetDataList(2, visibleSUTestPoints);
+            DA.SetData(3, throughVision);
             //DA.SetData(5, targetSphere);
             //DA.SetDataList(6, connections);
-            DA.SetDataList(5, data);
+            DA.SetDataList(4, data);
         }
 
 
@@ -237,7 +237,7 @@ namespace ISM {
                         Curve[] overlapCurves;
                         Point3d[] brepIntersectPoints;
 
-                        var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.0, out overlapCurves, out brepIntersectPoints);
+                        var intersection = Rhino.Geometry.Intersect.Intersection.CurveBrep(ray, obstacle, 0.01, out overlapCurves, out brepIntersectPoints);
                         if (brepIntersectPoints.Count() > 0) {
                             obstacleIntersectPoints.AddRange(brepIntersectPoints);
                             Point3d currClosestPoint = Point3dList.ClosestPointInList(brepIntersectPoints, testSU.Gen_Point3d);
@@ -303,7 +303,7 @@ namespace ISM {
 
                     bool intersectedWithObstacles = false;
                     foreach (Brep obstacle in obstacles) {
-                        Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.0, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
+                        Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, obstacle, 0.01, out overlapCurves, out brepIntersectPoints1);  /// REPLACE BY SPHERE OBSTACLE INTERSECTION
                         if (brepIntersectPoints1.Count() > 0) {
                             intersectedWithObstacles = true;
                             break;
@@ -313,7 +313,7 @@ namespace ISM {
                         continue;
                     }
 
-                    Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.0, out overlapCurves, out brepIntersectPoints);
+                    Rhino.Geometry.Intersect.Intersection.CurveBrep(connection, targetSphere, 0.01, out overlapCurves, out brepIntersectPoints);
                     if (brepIntersectPoints.Count() > 1) {
                         throughtVision++;
                         //connections.Add(connection);

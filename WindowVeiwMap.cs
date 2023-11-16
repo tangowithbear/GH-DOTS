@@ -149,13 +149,13 @@ namespace ISM {
 
 
 
-            int skyPercentage = testSU.ViewContent_SkyPercentage;
-            int groundPercentage = testSU.ViewContent_GroundPercentage;
-            int builtPercentage = testSU.ViewContent_BuiltPercentage;
+            int skyPercentage = testSU.ViewContent_SkyPercentage/2;
+            int groundPercentage = testSU.ViewContent_GroundPercentage / 2;
+            int builtPercentage = testSU.ViewContent_BuiltPercentage / 2;
 
 
 
-            Brep[] skyViz    = CreateChartViz(testSU.Gen_Point3d, 100, 100 - skyPercentage);
+            Brep[] skyViz    = CreateChartViz(testSU.Gen_Point3d, 50, 50 - skyPercentage);
             Brep[] builtViz  = CreateChartViz(testSU.Gen_Point3d, groundPercentage + builtPercentage, 0.2+groundPercentage);
             Brep[] groundViz = CreateChartViz(testSU.Gen_Point3d, 0.2 +groundPercentage, 0.5);
 
