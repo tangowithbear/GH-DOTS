@@ -13,7 +13,7 @@ using System.Net;
 using System.Reflection;
 
 namespace ISM {
-    public class WindowViewContentComponent : GH_Component {
+    public class WindowViewMapComponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -21,9 +21,9 @@ namespace ISM {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public WindowViewContentComponent()
-          : base("Window View Content", "WindowContent",
-            "Evaliate window content",
+        public WindowViewMapComponent()
+          : base("Window View Map", "WinViewV",
+            "Visualize window content",
             "IndoorSpaceManager", "Vision") {
         }
 
@@ -42,9 +42,9 @@ namespace ISM {
             //pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
 
             pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Sky", "S", "Percentage of the visible sky", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Ground", "G", "Percentage of visible ground", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Built", "B", "Percentage of visible built environment", GH_ParamAccess.item);
+            //pManager.AddNumberParameter("Sky", "S", "Percentage of the visible sky", GH_ParamAccess.item);
+            //pManager.AddNumberParameter("Ground", "G", "Percentage of visible ground", GH_ParamAccess.item);
+            //pManager.AddNumberParameter("Built", "B", "Percentage of visible built environment", GH_ParamAccess.item);
 
 
             // If you want to change properties of certain parameters, 
@@ -91,9 +91,7 @@ namespace ISM {
 
             Point3d testPoint = Point3d.Unset;   
         
-            double skyPercentage = 0.00;
-            double groundPercentage = 0.00;
-            double builtPercentage = 0.00;
+
             //List<double> numValues = new List<double> { skyPercentage, groundPercentage, builtPercentage};
 
             // Then we need to access the input parameters individually. 
@@ -107,9 +105,9 @@ namespace ISM {
             Grasshopper.Kernel.Types.GH_ObjectWrapper obj = new Grasshopper.Kernel.Types.GH_ObjectWrapper();
 
             if (!DA.GetData(0, ref obj)) return;
-            if (!DA.GetData(1, ref skyPercentage)) return;
-            if (!DA.GetData(2, ref groundPercentage)) return;
-            if (!DA.GetData(3, ref builtPercentage)) return;
+            //if (!DA.GetData(1, ref skyPercentage)) return;
+            //if (!DA.GetData(2, ref groundPercentage)) return;
+            //if (!DA.GetData(3, ref builtPercentage)) return;
 
 
 
@@ -119,10 +117,6 @@ namespace ISM {
 
             if (obj == null) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Spatial Unit  is provided");
-                return;
-            }
-            if (skyPercentage < 0 || groundPercentage < 0 || builtPercentage < 0) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The value should be positive or zero");
                 return;
             }
 
@@ -138,8 +132,6 @@ namespace ISM {
             testPoint = testSU.Gen_Point3d;
 
 
-            var v = Params.Input[3].Sources[0];
-            string bonusName = v.NickName;
 
 
             //object tiutout = null;
@@ -157,15 +149,15 @@ namespace ISM {
 
 
 
-            testSU.ViewContent_SkyPercentage = skyPercentage;
-            testSU.ViewContent_GroundPercentage = groundPercentage;
-            testSU.ViewContent_BuiltPercentage = builtPercentage;
+            int skyPercentage = testSU.ViewContent_SkyPercentage;
+            int groundPercentage = testSU.ViewContent_GroundPercentage;
+            int builtPercentage = testSU.ViewContent_BuiltPercentage;
 
 
 
-            Brep[] skyViz    = CreateChartViz(testSU.Gen_Point3d, testSU.Gen_Area * 100, (testSU.Gen_Area * 100) - skyPercentage);
-            Brep[] builtViz  = CreateChartViz(testSU.Gen_Point3d, groundPercentage + builtPercentage, groundPercentage);
-            Brep[] groundViz = CreateChartViz(testSU.Gen_Point3d, groundPercentage, 0.5);
+            Brep[] skyViz    = CreateChartViz(testSU.Gen_Point3d, 100, 100 - skyPercentage);
+            Brep[] builtViz  = CreateChartViz(testSU.Gen_Point3d, groundPercentage + builtPercentage, 0.2+groundPercentage);
+            Brep[] groundViz = CreateChartViz(testSU.Gen_Point3d, 0.2 +groundPercentage, 0.5);
 
             List<string> data = AggregateProperties(testSU);
 

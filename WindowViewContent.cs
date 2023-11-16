@@ -13,7 +13,7 @@ using System.Net;
 using System.Reflection;
 
 namespace ISM {
-    public class ClosestWindowComponent : GH_Component {
+    public class WindowViewContentComponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -21,9 +21,9 @@ namespace ISM {
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public ClosestWindowComponent()
-          : base("ClosestWindow", "ClosWin",
-            "Closest Window centroid",
+        public WindowViewContentComponent()
+          : base("WindowWiewContent", "WinView",
+            "Window View Content",
             "IndoorSpaceManager", "Vision") {
         }
 
@@ -35,6 +35,8 @@ namespace ISM {
             pManager.AddGenericParameter("Spatial Unit", "SU", "Spatial unit to test", GH_ParamAccess.item);
             pManager.AddGeometryParameter("Obstacles", "O", "Building geometry excluding the windows", GH_ParamAccess.list);
             pManager.AddRectangleParameter("Windows", "W", "Windows", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Buildings", "B", "Exteior obstacles", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Ground", "G", "Ground", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -47,6 +49,9 @@ namespace ISM {
             pManager.AddPointParameter("WindowCentroid", "WP", "Centroid of the closest window", GH_ParamAccess.item);
             pManager.AddRectangleParameter("WindowRectangle", "WR", "Window rectangular frame", GH_ParamAccess.item);
             pManager.AddPointParameter("P", "P", "grid", GH_ParamAccess.list);
+            pManager.AddPointParameter("BuildingPoints", "BP", "BuildingPoints", GH_ParamAccess.list);
+            pManager.AddPointParameter("GroundPoints", "GP", "GroundPoints", GH_ParamAccess.list);
+            pManager.AddTextParameter("Properties data", "D", "Show properties with their values", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -62,7 +67,8 @@ namespace ISM {
             SpatialUnit testSU = null;                             
             List<GeometryBase> obstacles = new List<GeometryBase>();    
             List<Rectangle3d> windows= new List<Rectangle3d>();
-
+            List<GeometryBase> buildings= new List<GeometryBase>();
+            GeometryBase ground = null;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -73,7 +79,8 @@ namespace ISM {
             if (!DA.GetData(0, ref testSU)) return;
             if (!DA.GetDataList<GeometryBase>(1, obstacles)) return;
             if (!DA.GetDataList<Rectangle3d>(2, windows)) return;
-
+            if (!DA.GetDataList<GeometryBase>(3, buildings)) return;
+            if (!DA.GetData(4, ref ground)) return;
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
@@ -97,11 +104,24 @@ namespace ISM {
             ComputeClosestWindowPoint(testSU, obstacles, windows, out Rectangle3d closestWindow, out Point3d closestWindowPoint);
             List<Point3d> windowGridPoints = CompouteWindowGridPoints(closestWindow, 10, 10);
 
+            List<Ray3d> rays = ComputeRays(testSU.Gen_Point3d, windowGridPoints);
+            ComputeRayIntersections(rays, buildings, ground, out int buildingScore, out int groundScore,
+                                    out List<Point3d> allbuildingIntersectionPoints, out List<Point3d> allgroundIntersectionPoints); 
+
+            testSU.ViewContent_BuiltPercentage = buildingScore;
+            testSU.ViewContent_GroundPercentage = groundScore;
+            testSU.ViewContent_SkyPercentage = 100 - buildingScore - groundScore;
+
+            List<string> data = AggregateProperties(testSU);
+
             DA.SetData(0, testSU);
             DA.SetData(1, testSU.Gen_Point3d);
             DA.SetData(2, closestWindowPoint);
             DA.SetData(3, closestWindow);
             DA.SetDataList(4, windowGridPoints);
+            DA.SetDataList(5, allbuildingIntersectionPoints);
+            DA.SetDataList(6, allgroundIntersectionPoints);
+            DA.SetDataList(7, data);
         }
 
 
@@ -155,6 +175,76 @@ namespace ISM {
             }
             return windowGridPoints;
         }
+
+        /// .........................COMPUTE RAYS................................
+
+        public List<Ray3d> ComputeRays(Point3d testPoint, List<Point3d> windowGridPoints) {
+            List<Ray3d> rays = new List<Ray3d>();
+            foreach (Point3d windowGridPoint in windowGridPoints) {
+                Vector3d vector = windowGridPoint - testPoint;
+                Ray3d ray = new Ray3d(testPoint, vector);
+                rays.Add(ray);                     
+            }
+            return rays;
+        }
+
+        /// .........................COMPUTE INTERSECTIONS................................
+
+        public void ComputeRayIntersections(List<Ray3d> rays, List<GeometryBase> buildings, GeometryBase ground, out int buildingScore, out int groundScore,
+                                            out List<Point3d> allbuildingIntersectionPoints, out List<Point3d> allgroundIntersectionPoints) {
+            buildingScore = 0;
+            groundScore = 0;
+
+            allbuildingIntersectionPoints = new List<Point3d>();
+            allgroundIntersectionPoints = new List<Point3d>();
+
+            List<GeometryBase> grounds = new List<GeometryBase>();
+            grounds.Add(ground);
+
+
+            foreach (Ray3d ray in rays) {
+
+                Point3d[] buildingIntersectionPoints = Intersection.RayShoot(ray, buildings, 1);
+                if (buildingIntersectionPoints.Count() > 0) {
+                    allbuildingIntersectionPoints.Add(buildingIntersectionPoints[0]);
+                    buildingScore += 1;
+                }
+
+                Point3d[] groundIntersectionPoints = Intersection.RayShoot(ray, grounds, 1);
+                if (groundIntersectionPoints.Count() > 0) {
+                    allgroundIntersectionPoints.Add(groundIntersectionPoints[0]);
+                    if ((groundIntersectionPoints.Count() > 0) && (buildingIntersectionPoints.Count() > 0)) {
+                        continue;
+                    }
+                    else if ((groundIntersectionPoints.Count() > 0) && (buildingIntersectionPoints.Count() == 0)) {
+                        groundScore += 1;
+                    }
+                }
+
+            }
+        }
+
+        public List<string> AggregateProperties(SpatialUnit testSU) {
+
+            List<string> result = new List<string>();
+
+            Type t = testSU.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (var property in props) {
+
+                //string propString = string.Format("{0} : {1}", property.Name, property.GetValue(testSU));
+                string propString = $"{property.Name} : {property.GetValue(testSU)}";
+
+                if (propString.Contains("ViewContent") || propString.Contains("SUID")) {
+
+                    result.Add(propString);
+                }
+            }
+
+            return result;
+        }
+
+
 
 
 

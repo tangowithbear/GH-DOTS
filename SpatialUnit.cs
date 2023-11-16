@@ -94,9 +94,9 @@ namespace ISM {
 
         ///...........................VIEW CONTENT.......................
 
-        public double? ViewContent_SkyPercentage                     { get; set; }
-        public double? ViewContent_GroundPercentage                  { get; set; }
-        public double? ViewContent_BuiltPercentage                   { get; set; }
+        public int ViewContent_SkyPercentage                     { get; set; }
+        public int ViewContent_GroundPercentage                  { get; set; }
+        public int ViewContent_BuiltPercentage                   { get; set; }
 
 
 
@@ -120,9 +120,9 @@ namespace ISM {
             this.Isovist_Int_MajorAxisLength = null;
             this.Isovist_Int_MinorAxisLength = null;
 
-            this.ViewContent_BuiltPercentage = null;
-            this.ViewContent_GroundPercentage = null;
-            this.ViewContent_SkyPercentage = null;
+            this.ViewContent_BuiltPercentage = 0;
+            this.ViewContent_GroundPercentage = 0;
+            this.ViewContent_SkyPercentage = 0;
 
             this.Connectivity_Percentage = null;
             this.Connectivity_NumberOfVisibleSUs = null;
