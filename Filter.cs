@@ -265,7 +265,10 @@ namespace ISM {
 
                     object propertyValue = propertyInfo.GetValue(SU);
                     if (propertyValue != null) {
-                        double PropertyValueDouble = Math.Round((double)propertyValue, 2);
+                        bool res = Double.TryParse(propertyValue.ToString(), out double PropertyValueDouble);
+                        if (!res)
+                            continue;
+                        //double PropertyValueDouble = Math.Round((double)propertyValue, 2);
 
                         if ((valuePredicate == 0) && (Math.Abs(PropertyValueDouble - valueSubjectDouble) <= 0.001)) filteredSU.Add(SU);
                         if ((valuePredicate == 1) && (Math.Abs(PropertyValueDouble - valueSubjectDouble) > 0.001)) filteredSU.Add(SU);
