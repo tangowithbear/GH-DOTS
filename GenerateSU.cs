@@ -232,7 +232,13 @@ namespace ISM {
                 else propertyValue = $"{property.GetValue(testSU)}";
 
                 string propString = $"{property.Name} : {propertyValue} ";
-                result.Add(propString);
+
+
+
+                if (propString.Contains("Gen") || propString.Contains("SUID")) {
+
+                    result.Add(propString);
+                }
             }
 
             return result;

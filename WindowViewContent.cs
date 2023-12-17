@@ -205,24 +205,19 @@ namespace ISM {
             foreach (Ray3d ray in rays) {
 
                 Point3d[] buildingIntersectionPoints = Intersection.RayShoot(ray, buildings, 1);
+                Point3d[] groundIntersectionPoints = Intersection.RayShoot(ray, grounds, 1);
+
                 if (buildingIntersectionPoints.Count() > 0) {
                     allbuildingIntersectionPoints.Add(buildingIntersectionPoints[0]);
                     buildingScore += 1;
-                }
-
-                Point3d[] groundIntersectionPoints = Intersection.RayShoot(ray, grounds, 1);
-                if (groundIntersectionPoints.Count() > 0) {
+                } 
+                else if (groundIntersectionPoints.Count() > 0 && buildingIntersectionPoints.Count() == 0) {
+                    groundScore += 1;
                     allgroundIntersectionPoints.Add(groundIntersectionPoints[0]);
-                    if ((groundIntersectionPoints.Count() > 0) && (buildingIntersectionPoints.Count() > 0)) {
-                        continue;
-                    }
-                    else if ((groundIntersectionPoints.Count() > 0) && (buildingIntersectionPoints.Count() == 0)) {
-                        groundScore += 1;
-                    }
                 }
-
             }
         }
+    
 
         public List<string> AggregateProperties(SpatialUnit testSU) {
 
