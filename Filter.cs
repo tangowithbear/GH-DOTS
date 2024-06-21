@@ -16,7 +16,7 @@ using System.Net;
 using System.Reflection;
 using System.Xml.Linq;
 
-namespace ISM {
+namespace DOTS {
     public class FilterComponent : GH_Component {
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.

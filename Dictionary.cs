@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace ISM
+namespace DOTS
 {
     /*internal class Main
     {

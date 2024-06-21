@@ -12,7 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace ISM {
+namespace DOTS {
     public class GenerateSUtestcomponent : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
@@ -39,7 +39,7 @@ namespace ISM {
 
             //pManager.AddPointParameter("Test Point", "P", "Test point for a spatial unit", GH_ParamAccess.item);
             pManager.AddPointParameter("All Points", "PTs", "A list of all Points", GH_ParamAccess.list);
-
+            pManager.AddPointParameter("Origin", "O", "Project Origin set by user", GH_ParamAccess.item);
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -54,9 +54,9 @@ namespace ISM {
             // Output parameters do not have default values, but they too must have the correct access type.
 
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
-            pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifire", GH_ParamAccess.item);
+            pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifyer", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
-            pManager.AddPointParameter("Origin", "O", "Origin location", GH_ParamAccess.item);
+            pManager.AddPointParameter("Origin", "O", "Project Origin location", GH_ParamAccess.item);
             pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.item);
 
 
@@ -76,33 +76,23 @@ namespace ISM {
             // We'll start by declaring variables and assigning them starting values.
 
 
-
             List<Point3d> allPts = new List<Point3d>();
-
-
+            Point3d origin = Point3d.Unset;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
-
-            //if (!DA.GetData(0, ref plane)) return;
-            //if (!DA.GetData(1, ref radius0)) return;
-            //if (!DA.GetData(2, ref radius1)) return;
-            //if (!DA.GetData(3, ref turns)) return;
-
-
-            //if (!DA.GetData(0, ref testPoint)) return;
-            if (!DA.GetDataList<Point3d>(0, allPts)) return;
-
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            /*if (testPoint == Gen_Point3d.Unset) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Test point is provided");
+            if (!DA.GetDataList<Point3d>(0, allPts))
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No point is provided");
+                return;
+
+
+            if (!DA.GetData<Point3d>(1, ref origin)) {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Origin is provided");
                 return;
             }
-            if (allPts.Count <= 1) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No points to check");
-                return;
-            }*/
+            
 
 
 
@@ -151,9 +141,6 @@ namespace ISM {
 
 
 
-
-            Point3d origin = FindOrigin(allPts);
-
             DA.SetDataList  (0, allTestPts);
             DA.SetDataList  (1, listSUID);
             DA.SetDataList  (2, allSUs);
@@ -181,7 +168,7 @@ namespace ISM {
 
         /// ............................... FIND ORIGIN..............................................
 
-        public Point3d FindOrigin(List<Point3d> allPts) {
+        /*public Point3d FindOrigin(List<Point3d> allPts) {
 
             Point3d localOrigin = allPts[0];
             Point3d worldOrigin = new Point3d(0, 0, 0);
@@ -191,7 +178,7 @@ namespace ISM {
                 if (Pt.DistanceToSquared(worldOrigin) < smallestDistance) localOrigin = Pt;
             }
             return localOrigin;
-        }
+        }*/
 
 
         /// ............................... Fi..............................................

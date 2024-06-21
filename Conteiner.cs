@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace ISM {
+namespace DOTS {
     public class Conteiner : GH_Component {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
