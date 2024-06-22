@@ -24,7 +24,7 @@ namespace DOTS {
         public GenerateSUtestcomponent()
           : base("GenSU", "GenerateSU",
             "Cast to SU",
-            "DOTS ", "Map") {
+            "DOTS", "Map") {
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace DOTS {
 
             pManager.AddPointParameter("TestPoint", "TP", "SU location", GH_ParamAccess.item);
             pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifyer", GH_ParamAccess.item);
-            pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Unit", GH_ParamAccess.item);
+            pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Units", GH_ParamAccess.item);
             pManager.AddPointParameter("Origin", "O", "Project Origin location", GH_ParamAccess.item);
-            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.item);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
 
 
 
@@ -77,21 +77,21 @@ namespace DOTS {
 
 
             List<Point3d> allPts = new List<Point3d>();
-            Point3d origin;
+            Point3d origin = Point3d.Unset;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             // We should now validate the data and warn the user if invalid data is supplied.
 
-            if (!DA.GetDataList<Point3d>(0, allPts))
+            if (!DA.GetDataList<Point3d>(0, allPts)) { 
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No point is provided");
                 return;
+            }
 
-
-            if (!DA.GetData<Point3d>(1, ref origin)) 
+            if (!DA.GetData<Point3d>(1, ref origin)) {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Origin is provided");
                 return;
-
+            }
 
             //object tiutout = null;
             //if (tiutout is Gen_Point3d point3d) {
@@ -133,9 +133,6 @@ namespace DOTS {
                     tree.Add(dataList[i][j], new GH_Path(i));
                 }   
             }
-            
-
-
 
 
             DA.SetDataList  (0, allTestPts);
@@ -143,7 +140,6 @@ namespace DOTS {
             DA.SetDataList  (2, allSUs);
             DA.SetData      (3, origin);
             DA.SetDataTree  (4, tree);
-
         }
 
 
