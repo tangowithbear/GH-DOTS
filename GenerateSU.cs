@@ -24,7 +24,7 @@ namespace DOTS {
         public GenerateSUtestcomponent()
           : base("GenSU", "GenerateSU",
             "Cast to SU",
-            "DOTS", "Map") {
+            "DOTS ", "Map") {
         }
 
         /// <summary>
