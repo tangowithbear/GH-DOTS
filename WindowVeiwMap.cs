@@ -24,7 +24,7 @@ namespace DOTS {
         public WindowViewMapComponent()
           : base("Window View Map", "WinViewV",
             "Visualize window content",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

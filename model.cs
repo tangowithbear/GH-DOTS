@@ -24,7 +24,7 @@ namespace DOTS {
         public ModelComponent()
           : base("Model structure", "Model",
             "Struction related metrics",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

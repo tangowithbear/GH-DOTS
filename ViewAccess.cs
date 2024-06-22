@@ -24,7 +24,7 @@ namespace DOTS {
         public ViewAccessComponent()
           : base("ViewAccess", "ViewAccess",
             "Analyse the orientation of the isovist",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

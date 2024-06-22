@@ -22,7 +22,7 @@ namespace DOTS {
         public Conteiner()
           : base("Container", "Container",
             "Collect data",
-            "IndoorSpaceManager", "Query") {
+            "DOTS", "Query") {
         }
 
         /// <summary>

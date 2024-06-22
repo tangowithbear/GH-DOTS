@@ -23,7 +23,7 @@ namespace DOTS {
         public IsovistComponent()
           : base("Isovist", "IsoVist",
             "Construct an Isovist and evaluate data",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

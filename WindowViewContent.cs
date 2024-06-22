@@ -24,7 +24,7 @@ namespace DOTS {
         public WindowViewContentComponent()
           : base("WindowWiewContent", "WinView",
             "Window View Content",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

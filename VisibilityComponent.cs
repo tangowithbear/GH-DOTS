@@ -22,7 +22,7 @@ namespace DOTS {
         public VisibilityComponent()
           : base("Visibility", "Visibility",
             "Check if you see an object",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>

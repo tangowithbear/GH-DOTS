@@ -24,7 +24,7 @@ namespace DOTS {
         public GenerateSUtestcomponent()
           : base("GenSU", "GenerateSU",
             "Cast to SU",
-            "IndoorSpaceManager", "Map") {
+            "DOTS", "Map") {
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace DOTS {
 
 
             List<Point3d> allPts = new List<Point3d>();
-            Point3d origin = Point3d.Unset;
+            Point3d origin;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -88,12 +88,9 @@ namespace DOTS {
                 return;
 
 
-            if (!DA.GetData<Point3d>(1, ref origin)) {
+            if (!DA.GetData<Point3d>(1, ref origin)) 
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "No Origin is provided");
                 return;
-            }
-            
-
 
 
             //object tiutout = null;

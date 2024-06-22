@@ -26,7 +26,7 @@ namespace DOTS {
         public FilterComponent()
           : base("Filter", "Filter",
             "Filter Spatial Units",
-            "IndoorSpaceManager", "Query") {
+            "DOTS", "Query") {
         }
         /// Registers all the input parameters for this component.
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {

@@ -24,7 +24,7 @@ namespace DOTS{
         public ConnectivityComponent()
           : base("Visual connectivity", "Connectivity",
             "Check the visual connections",
-            "IndoorSpaceManager", "Vision") {
+            "DOTS", "Vision") {
         }
 
         /// <summary>
