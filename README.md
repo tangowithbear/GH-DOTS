@@ -1,5 +1,3 @@
-> This is a repo of "GH DOTS" plug-in for Grasshopper
->
 > Please read the paper to know more about it: https://github.com/tangowithbear/GH-DOTS/blob/master/Paper/Encoding_Spaces.pdf
 
 
