@@ -8,12 +8,12 @@
 > Grasshopper is a visual programming tool within Rhinoceros 3D, enabling parametric design workflows.
 
 ##  Installation
-Development Status
-The tool is currently in early development and is intended to be run in debug mode through Visual Studio.
+>Development Status :
+>The tool is currently in early development and is intended to be run in debug mode through Visual Studio.
 
-Requirements
-Rhinoceros 3D (Rhino) installed
-Visual Studio installed
+>Requirements:
+>Rhinoceros 3D (Rhino) installed
+>Visual Studio installed
 
 How to Run
 1 Clone the repository to your local machine:
