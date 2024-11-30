@@ -4,8 +4,8 @@
 
 
 ##  Description
-> Voxel Grid Framework for Quantitative Evaluation of Visual Perception in Indoor Spaces. The DOTS plug-in a Grasshopper base toolkit. 
-> Grasshopper is a visual programming language and environment that operates within the Rhinoceros 3D CAD software.
+> Voxel Grid Framework for Quantitative Evaluation of Visual Perception in Indoor Spaces.The DOTS plug-in is a Grasshopper-based toolkit.
+> Grasshopper is a visual programming tool within Rhinoceros 3D, enabling parametric design workflows.
 
 ##  Installation
 Development Status
