@@ -29,7 +29,6 @@ namespace DOTS {
 
         /// <summary>
         /// Registers all the input parameters for this component.
-        /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             // Use the pManager object to register your input parameters.
             // You can often supply default values when creating parameters.
@@ -57,7 +56,7 @@ namespace DOTS {
             pManager.AddTextParameter("SpatialUnit ID", "SUID", "Spatial Unit Identifyer", GH_ParamAccess.item);
             pManager.AddGenericParameter("SpatialUnit", "SU", "Generated Spatial Units", GH_ParamAccess.item);
             pManager.AddPointParameter("Origin", "O", "Project Origin location", GH_ParamAccess.item);
-            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.list);
+            pManager.AddTextParameter("Properties data", "D", "Show all properties with their values", GH_ParamAccess.item);
 
 
 
@@ -172,11 +171,6 @@ namespace DOTS {
             }
             return localOrigin;
         }*/
-
-
-        /// ............................... Fi..............................................
-
-
 
 
         /// ...............................MAKE A PROPERTY/VALUE LIST.................................
