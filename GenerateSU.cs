@@ -172,7 +172,6 @@ namespace DOTS {
             return localOrigin;
         }*/
 
-
         /// ...............................MAKE A PROPERTY/VALUE LIST.................................
 
         public List<string> AggregateProperties(SpatialUnit testSU) {
