@@ -26,4 +26,4 @@ The plugin contains three main sections: Map, Harvest and Query <br>
 - Harvest includes several components to run calculations for a specific set of properties for the provided spatial units. <br>
 - Query enables exploring the properties by applying filters or by reading data directly from the units. 
 
-For more detailed information read the Paper.
+For more detailed information read the Paper: https://github.com/tangowithbear/GH-DOTS/blob/master/Paper/Encoding_Spaces.pdf
